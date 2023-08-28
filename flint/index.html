@@ -1,0 +1,393 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Using flints in python" href="usage.html" />
+
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
+        <title>flint 0.3.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="#"><div class="brand">flint 0.3.3 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+  
+  
+  <span class="sidebar-brand-text">flint 0.3.3 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using flints in python</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="flint-rounded-floating-point-intervals-data-type">
+<h1><strong>flint</strong>: Rounded Floating Point Intervals data type<a class="headerlink" href="#flint-rounded-floating-point-intervals-data-type" title="Link to this heading">#</a></h1>
+<p>This package implements a rounded <strong>fl</strong>oating point <strong>int</strong>ervals or <code class="docutils literal notranslate"><span class="pre">flint</span></code> data-type
+in python and NumPy. The floating point interval type contains a pair of numbers that
+define the endpoint of an interval, and the exact value of a computation always lies
+somewhere in that interval. This type addresses one shortcoming of floating point
+numbers: equality comparisons. For this package, the equality operator for flints is
+implemented such that any overlap of the interval will be treated as equal, and should
+be though of as ‘could be equal’.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using flints in python</a></li>
+</ul>
+</div>
+<section id="why-what-purpose-do-rounded-floating-point-intervals-serve">
+<h2>Why? What purpose do rounded floating point intervals serve?<a class="headerlink" href="#why-what-purpose-do-rounded-floating-point-intervals-serve" title="Link to this heading">#</a></h2>
+<p>Computers are math machines, and in some sense all they do is use simple math to
+manipulate numbers. At the peril of great generalization there are two ways to represent
+numbers with computers, integers and floating point numbers. As a developer, the first
+choice is to use integers if they are an option. Integers are great! Most arithmetic
+works barring overflow, and most algorithms using integers can be directly implemented
+exactly with the computer.</p>
+<p>However some unfortunate cases we need more than just integers, and that ‘more’ includes
+both fractions AND irrational numbers. In those cases, we as developers tend to switch
+to floating point numbers. We tend to treat floating point numbers as the most general
+of number: a real number. And this works most of the time … until it doesn’t. Let’s
+look at why they don’t always work, and examine some of the odd consequences.</p>
+<section id="the-problem-with-floating-point-numbers">
+<h3>The problem with floating point numbers<a class="headerlink" href="#the-problem-with-floating-point-numbers" title="Link to this heading">#</a></h3>
+<p>A floating point numbers is similar to a number written in decimal with a decimal point
+and a finite number of digits. It is well known some numbers have infinite decimal
+representations, for example the fraction 1/3 with the decimal representation 0.3333…
+repeating to infinity. But a floating point numpy can only includes a finite number of
+digits, so we have to truncate the number, and it will no longer exactly represent 1/3.
+Here-in lies the first issue we can have with floating point numbers:</p>
+<ol class="arabic simple">
+<li><p>Floating pointer numbers can not represent all numbers exactly.</p></li>
+</ol>
+<p>For many very important numbers such as <span class="math notranslate nohighlight">\(\pi\)</span> or <span class="math notranslate nohighlight">\(\sqrt{2}\)</span> or even the
+humble 1/3rd do not have finite decimal representations, and so they can not be
+represented exactly by floating point numbers. Frequently, we can not exactly capture
+the input needed for some mathematical calculations. For example, since we can not
+exactly represent <span class="math notranslate nohighlight">\(\pi\)</span> with floating point numbers the result of <span class="math notranslate nohighlight">\(\sin(
+\text{nfp}(\pi))\)</span>, where <span class="math notranslate nohighlight">\(\text{nfp}(x)\)</span> represents the ‘nearest floating point’
+to <span class="math notranslate nohighlight">\(x\)</span>, will be close to, but NOT equal zero.</p>
+<p>This limited ability to represent numbers leads to another consequence of floating point
+numbers:</p>
+<ol class="arabic simple" start="2">
+<li><p>Exact math with floating point numbers does not always yield floating point numbers.</p></li>
+</ol>
+<p>A very simple example is just division. The number 1 is exactly representable, as is the
+number 3. But the result of dividing 1 by 3, the fraction 1/3rd is NOT representable.
+This result can lead to some results that seem to invalidate math. A classic example
+with binary floating point numbers is this: 2/10 + 2/10 + 2/10 will not yield the same
+result as (2+2+2)/10. Go ahead and try it out. Open up python and try</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><style type="text/css">
+span.prompt1:before {
+  content: ">>> ";
+}
+</style><span class="prompt1"><span class="p">(</span><span class="mf">0.2</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.6</span></span>
+</pre></div></div><p>you will find that the result yields <cite>False</cite>. This problem is well known, and most
+experienced programmers have a rule to never check equality with floating point numbers.
+When an equality comparison is required, a ‘close enough’ style comparison of the type
+where the absolute different is required to be less than some predetermined small value
+epsilon. An example python implementation could be</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">almost_eq</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare two floats to see if they are close to each other&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span>
+</pre></div>
+</div>
+<p>This works well enough if we know the approximate size of the numbers we expect to
+be working with, but will often fail if we are working with large ( &gt; 1 billion) or
+small ( &lt; 1 billionth) numbers and both of those values are WELL within the bounds of
+what can be represented by the typical 64 bit floating point number.</p>
+</section>
+<section id="rounded-floating-point-intervals">
+<h3>Rounded floating point intervals<a class="headerlink" href="#rounded-floating-point-intervals" title="Link to this heading">#</a></h3>
+<p>Let us introduce a new type of number that addressed the two issues above: the rounded
+<strong>fl</strong>oating point <strong>int</strong>erval or <cite>flint</cite>. To fully understand how these numbers (or
+really data-structures) allow us to address some of the issues of floating point
+numbers, lets break down the name in reverse order. First, notice the ‘interval’ in the
+name. Unlike typical numbers, which can be represented by 0-length point on a
+number-line, a flint will be represented by a small but finite-length interval with an
+upper and lower bound. The ‘exact’ value of any number can now be captured as long as it
+lies between the upper and lower bound.</p>
+<p>A very real objection to the new number might be: it’s and interval; it’s not really a
+number! This is true, but I as long as the interval is small it CAN be treated as a
+number and the size of the interval can capture the uncertainty in the exact value. That
+brings us to the second term in the name ‘floating point’. In a flint, the upper and
+lower bounds of the interval are 64 bit floating point numbers (a c <cite>double</cite> or numpy
+<cite>float64</cite>). Remember, that a floating point number is number with a decimal point and a
+finite number of non-zero digits. An important concept relating to those finite number
+of digits for floating point numbers is the ‘unit in last place’ or <em>ulp</em>. One <em>ulp</em> is
+the distance between two consecutive floating point number with a difference of 1 in the
+least significant digit. Now, when we want to represent <em>any</em> number $x$, we can turn
+that number into it’s nearest floating point $text{nfp}(x)$, and then define the upper
+and lower bounds as one <em>ulp</em> above and below $text{nfp}(x)$. For a 64 bit number, the
+unit in last place is typically 16 orders of magnitude smaller than the number itself,
+so this new number is still quite precise.</p>
+<p>Now you are perhaps satisfied that the interval can represent a number, AND we can make
+sure that <em>any</em> exact number can be captured in a small interval of only a few <em>ulp</em>
+wide. Lets try and satisfy the last criterion: can we guarantee that we can calculate a
+new small interval for all math operations that is guaranteed to hold the <em>exact</em> result
+from the <em>all</em> numbers contained in the input intervals? Yes, and we do so with the
+first and final term in the name, by ‘rounding’ the interval after each math operation.
+For all continuous functions, an interval in the input will map to an interval in the
+result, with the endpoints of the interval OR the extrema of the function mapping to the
+endpoints of the resulting interval. The IEEE-754 standard for floating point numbers
+requires that the result of all math operations be within 1 <em>ulp</em> of the exact result
+for exact inputs. This means if we round the lower boundary down by 1 <em>ulp</em> and round
+the upper boundary up by 1 <em>ulp</em> we can guarantee that the resulting interval will
+contain the exact result of <em>all</em> possible values in the input interval. This can grow
+the interval as more and more operations are performed, but this can be a be thought of
+as capturing the growing uncertainty of the final result from using floating point
+numbers in the first place.</p>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>The following references are use for the description of the floating point interval</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://web.mit.edu/hyperbook/Patrikalakis-Maekawa-Cho/node46.html">Patrikalakis et al</a> contains
+details of the mathematical implementation of the flint objects</p></li>
+<li><p><a class="reference external" href="https://www.gnu.org/software/libc/manual/html_node/Errors-in-Math-Functions.html">Know Maximum Errors in Math Functions</a>
+from the gnu libc manual.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="usage.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Using flints in python</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><strong>flint</strong>: Rounded Floating Point Intervals data type</a><ul>
+<li><a class="reference internal" href="#why-what-purpose-do-rounded-floating-point-intervals-serve">Why? What purpose do rounded floating point intervals serve?</a><ul>
+<li><a class="reference internal" href="#the-problem-with-floating-point-numbers">The problem with floating point numbers</a></li>
+<li><a class="reference internal" href="#rounded-floating-point-intervals">Rounded floating point intervals</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=d5a15cff"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

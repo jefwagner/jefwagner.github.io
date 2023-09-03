@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Flint Python API" href="python_api.html" /><link rel="prev" title="flint: Rounded Floating Point Intervals data type" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Flint C API" href="c_api.html" />
 
     <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
-        <title>Installation and Basic Usage - flint 0.3.4 documentation</title>
+        <title>Flint Python C Extension API - flint 0.3.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -155,10 +155,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation and Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_api.html">Flint Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="c_api.html">Flint C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="c_ext_api.html">Flint Python C Extension API</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Flint Python C Extension API</a></li>
 </ul>
 
 </div>
@@ -187,74 +187,122 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="installation-and-basic-usage">
-<h1>Installation and Basic Usage<a class="headerlink" href="#installation-and-basic-usage" title="Link to this heading">#</a></h1>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>Binary packages are avialable from <a class="reference external" href="https://pypi.org/project/numpy-flint/">PyPI</a>. Use
-<cite>pip</cite> to install the binary package.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><style type="text/css">
-span.prompt1:before {
-  content: "$> ";
-}
-</style><span class="prompt1">pip<span class="w"> </span>install<span class="w"> </span>numpy-flint</span>
-</pre></div></div><p>Binary packages have been only been built for CPython 3.7 and later and for some
-operating systems and architectures including:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>macos x86</p></li>
-<li><p>glibc linux i686</p></li>
-<li><p>glibc linux x86_64</p></li>
-<li><p>glibc linux aarch64</p></li>
-<li><p>windows win32</p></li>
-<li><p>windows amd64</p></li>
+          <section id="flint-python-c-extension-api">
+<h1>Flint Python C Extension API<a class="headerlink" href="#flint-python-c-extension-api" title="Link to this heading">#</a></h1>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Restructure this and add examples of how to set up a project that would use the
+numpy-flint module’s C Extension API.</p>
+</div>
+<p>Python C-API for flints</p>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.PyFlint">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint</span></span></span><a class="headerlink" href="#c.PyFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>The python flint object</p>
+<dl class="c member">
+<dt class="sig sig-object c" id="c.PyFlint.obval">
+<a class="reference internal" href="c_api.html#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">obval</span></span></span><a class="headerlink" href="#c.PyFlint.obval" title="Link to this definition">#</a><br /></dt>
+<dd><p>The flint c struct</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.PyFlint_Type_Ptr">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">PyTypeObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_Type_Ptr</span></span></span><a class="headerlink" href="#c.PyFlint_Type_Ptr" title="Link to this definition">#</a><br /></dt>
+<dd><p>A pointer to the PyTypeObject for the PyFlints</p>
+<p>Because of the programming standard or declaring everything static outside of
+enclosing functions, it is neccessary to use this pointer when you need to access
+the PyTypeObject* for the PyFlint instead of the direct address &amp;PyFlint_Type.</p>
+</dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.NPY_FLINT">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NPY_FLINT</span></span></span><a class="headerlink" href="#c.NPY_FLINT" title="Link to this definition">#</a><br /></dt>
+<dd><p>The integer enumeration for the custom ‘flint’ type in numpy.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.import_flint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">import_flint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.import_flint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Import the c api for numpy-flint python module</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success -1 on failure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_Check">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_Check</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_Check" title="Link to this definition">#</a><br /></dt>
+<dd><p>Check if an object is a flint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyObject to check</p></li>
 </ul>
-</div></blockquote>
-</section>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
-<p>To use in python, import the flint package and declare the number as a flint type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flint</span> <span class="kn">import</span> <span class="n">flint</span>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if the object is a flint, 0 otherwise</p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="c1"># Floating point numbers sometimes don&#39;t make sense</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mf">0.2</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="c1"># This evaluate to False</span>
-<span class="nb">print</span><span class="p">(</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">a</span><span class="o">+</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">b</span> <span class="p">)</span>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_FromFlint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_FromFlint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="c_api.html#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_FromFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a PyFlint object from a c flint struct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – The c flint struct</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new PyFlint object that contains a copy of f</p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="c1"># Rounded floating point intervals will fix these issues</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
-<span class="c1"># This evalautes to True</span>
-<span class="nb">print</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">x</span><span class="o">+</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>To use with NumPy, import NumPy as well (first?). Mark the array’s dtype as <cite>flint</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">flint</span> <span class="kn">import</span> <span class="n">flint</span>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_AsFlint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="c_api.html#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_AsFlint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_AsFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get a C flint from a PyFlint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyFlint object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coresponding flint value</p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">3</span><span class="p">,),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flint</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
-<span class="c1"># This evaluates to True</span>
-<span class="nb">print</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">b</span> <span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Working with floating point intervals is much slower than standard floating point
-operations, and should only be used where the added guarantee of ‘could be equal’ is
-required. Also note that the project is in an early and mostly untested state. As of
-right now, <code class="docutils literal notranslate"><span class="pre">numpy-flint</span></code> implements most real functions defined in the C99
-<code class="docutils literal notranslate"><span class="pre">math.h</span></code> header file, but lacks some of the functions for interacting with
-integers such as <code class="docutils literal notranslate"><span class="pre">round</span></code>, <code class="docutils literal notranslate"><span class="pre">ceil</span></code>, <code class="docutils literal notranslate"><span class="pre">floor</span></code>, and <code class="docutils literal notranslate"><span class="pre">fmod</span></code>.</p>
-</div>
-</section>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_AsDouble">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_AsDouble</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_AsDouble" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get a C double from a PyFlint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyFlint object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coresponding flint center value</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -262,23 +310,15 @@ integers such as <code class="docutils literal notranslate"><span class="pre">ro
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="python_api.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Flint Python API</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
+          
+          <a class="prev-page" href="c_api.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Flint C API</div>
                 
               </div>
             </a>
@@ -300,28 +340,8 @@ integers such as <code class="docutils literal notranslate"><span class="pre">ro
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Installation and Basic Usage</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

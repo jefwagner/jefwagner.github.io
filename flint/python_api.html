@@ -1,0 +1,506 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Flint C API" href="c_api.html" /><link rel="prev" title="Installation and Basic Usage" href="usage.html" />
+
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
+        <title>Flint Python API - flint 0.3.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">flint 0.3.4 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">flint 0.3.4 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Flint Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c_api.html">Flint C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c_ext_api.html">Flint Python C Extension API</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="flint-python-api">
+<h1>Flint Python API<a class="headerlink" href="#flint-python-api" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="flint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flint</span></span><a class="headerlink" href="#flint" title="Link to this definition">#</a></dt>
+<dd><p>A rounded floating point numeric data type. This is a numeric data type and supports
+all the standard arithmetic operations (<code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code>) and
+thier respective inplace operators (<code class="docutils literal notranslate"><span class="pre">+=</span></code>, <code class="docutils literal notranslate"><span class="pre">-=</span></code>, <code class="docutils literal notranslate"><span class="pre">*=</span></code>, <code class="docutils literal notranslate"><span class="pre">/=</span></code>, <code class="docutils literal notranslate"><span class="pre">**=</span></code>) between
+other flint types as well as all non-complex numeric types. In addition the flints
+can be cast back a standard floating point type with the built-in python <cite>float</cite>
+function.</p>
+<section id="members">
+<h2>Members<a class="headerlink" href="#members" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="flint.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#flint.a" title="Link to this definition">#</a></dt>
+<dd><p>The lower bound of the interval</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="flint.b">
+<span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#flint.b" title="Link to this definition">#</a></dt>
+<dd><p>The upper bound of the interval</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="flint.v">
+<span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#flint.v" title="Link to this definition">#</a></dt>
+<dd><p>The tracked value</p>
+</dd></dl>
+
+</section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="flint.eps">
+<span class="sig-name descname"><span class="pre">eps</span></span><a class="headerlink" href="#flint.eps" title="Link to this definition">#</a></dt>
+<dd><p>The width of the interval (b-a)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="flint.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><a class="headerlink" href="#flint.interval" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list">
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The interval data as a tuple (a, b, v)</p>
+</dd>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
+<dd class="field-even"><p>Set the interval data with a tuple</p>
+<p>If you set only boundaries (a,b) the tracked value is set to the average (b-a)/2</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.abs">
+<span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.abs" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the absolute value of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.sqrt">
+<span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.sqrt" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the square root of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.cbrt">
+<span class="sig-name descname"><span class="pre">cbrt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.cbrt" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the cube root of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.hypot">
+<span class="sig-name descname"><span class="pre">hypot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.hypot" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the hypotenuse distance with the two intervals</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.exp">
+<span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.exp" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the exponential func of an interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.exp2">
+<span class="sig-name descname"><span class="pre">exp2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.exp2" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the exponential base 2 of an interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.expm1">
+<span class="sig-name descname"><span class="pre">expm1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.expm1" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the exponential minus 1 of an interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.log" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the natural log of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.log10">
+<span class="sig-name descname"><span class="pre">log10</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.log10" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the log base 10 of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.log2">
+<span class="sig-name descname"><span class="pre">log2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.log2" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the log base 2 of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.log1p">
+<span class="sig-name descname"><span class="pre">log1p</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.log1p" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the natural log of one plus the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.sin">
+<span class="sig-name descname"><span class="pre">sin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.sin" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the sine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.cos">
+<span class="sig-name descname"><span class="pre">cos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.cos" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the cosine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.tan">
+<span class="sig-name descname"><span class="pre">tan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.tan" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the tangent of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arcsin">
+<span class="sig-name descname"><span class="pre">arcsin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arcsin" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse sine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arccos">
+<span class="sig-name descname"><span class="pre">arccos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arccos" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse cosine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arctan">
+<span class="sig-name descname"><span class="pre">arctan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arctan" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse tangent of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arctan2">
+<span class="sig-name descname"><span class="pre">arctan2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arctan2" title="Link to this definition">#</a></dt>
+<dd><p>Evalute the two-input inverse tangent of the intervals</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.sinh">
+<span class="sig-name descname"><span class="pre">sinh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.sinh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the hyperbolic sine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.cosh">
+<span class="sig-name descname"><span class="pre">cosh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.cosh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the hyperbolic cosine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.tanh">
+<span class="sig-name descname"><span class="pre">tanh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.tanh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the hyperbolic tangent of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arcsinh">
+<span class="sig-name descname"><span class="pre">arcsinh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arcsinh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse hyperbolic sine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arccosh">
+<span class="sig-name descname"><span class="pre">arccosh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arccosh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse hyperbolic cosine of the interval</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flint.flint.arctanh">
+<span class="sig-name descname"><span class="pre">arctanh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flint.flint.arctanh" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the inverse hyperbolic tangent of the interval</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="c_api.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Flint C API</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="usage.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Installation and Basic Usage</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Flint Python API</a><ul>
+<li><a class="reference internal" href="#flint"><code class="docutils literal notranslate"><span class="pre">flint</span></code></a><ul>
+<li><a class="reference internal" href="#flint.a"><code class="docutils literal notranslate"><span class="pre">flint.a</span></code></a></li>
+<li><a class="reference internal" href="#flint.b"><code class="docutils literal notranslate"><span class="pre">flint.b</span></code></a></li>
+<li><a class="reference internal" href="#flint.v"><code class="docutils literal notranslate"><span class="pre">flint.v</span></code></a></li>
+<li><a class="reference internal" href="#flint.eps"><code class="docutils literal notranslate"><span class="pre">flint.eps</span></code></a></li>
+<li><a class="reference internal" href="#flint.interval"><code class="docutils literal notranslate"><span class="pre">flint.interval</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flint.flint.abs"><code class="docutils literal notranslate"><span class="pre">flint.abs()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.sqrt"><code class="docutils literal notranslate"><span class="pre">flint.sqrt()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.cbrt"><code class="docutils literal notranslate"><span class="pre">flint.cbrt()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.hypot"><code class="docutils literal notranslate"><span class="pre">flint.hypot()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.exp"><code class="docutils literal notranslate"><span class="pre">flint.exp()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.exp2"><code class="docutils literal notranslate"><span class="pre">flint.exp2()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.expm1"><code class="docutils literal notranslate"><span class="pre">flint.expm1()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.log"><code class="docutils literal notranslate"><span class="pre">flint.log()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.log10"><code class="docutils literal notranslate"><span class="pre">flint.log10()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.log2"><code class="docutils literal notranslate"><span class="pre">flint.log2()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.log1p"><code class="docutils literal notranslate"><span class="pre">flint.log1p()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.sin"><code class="docutils literal notranslate"><span class="pre">flint.sin()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.cos"><code class="docutils literal notranslate"><span class="pre">flint.cos()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.tan"><code class="docutils literal notranslate"><span class="pre">flint.tan()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arcsin"><code class="docutils literal notranslate"><span class="pre">flint.arcsin()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arccos"><code class="docutils literal notranslate"><span class="pre">flint.arccos()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arctan"><code class="docutils literal notranslate"><span class="pre">flint.arctan()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arctan2"><code class="docutils literal notranslate"><span class="pre">flint.arctan2()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.sinh"><code class="docutils literal notranslate"><span class="pre">flint.sinh()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.cosh"><code class="docutils literal notranslate"><span class="pre">flint.cosh()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.tanh"><code class="docutils literal notranslate"><span class="pre">flint.tanh()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arcsinh"><code class="docutils literal notranslate"><span class="pre">flint.arcsinh()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arccosh"><code class="docutils literal notranslate"><span class="pre">flint.arccosh()</span></code></a></li>
+<li><a class="reference internal" href="#flint.flint.arctanh"><code class="docutils literal notranslate"><span class="pre">flint.arctanh()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=1e28cc32"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

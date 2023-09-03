@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Flint Python C Extension API" href="c_ext_api.html" /><link rel="prev" title="Flint Python API" href="python_api.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="C Extensions with flints" href="c_ext.html" />
 
     <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Flint C API - flint 0.3.4 documentation</title>
@@ -157,8 +157,9 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_api.html">Flint Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel.html">Building and Testing from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c_ext.html">C Extensions with flints</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Flint C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="c_ext_api.html">Flint Python C Extension API</a></li>
 </ul>
 
 </div>
@@ -195,6 +196,8 @@
         <article role="main">
           <section id="flint-c-api">
 <h1>Flint C API<a class="headerlink" href="#flint-c-api" title="Link to this heading">#</a></h1>
+<section id="pure-c-flint-objects-and-functions">
+<h2>Pure C flint objects and functions<a class="headerlink" href="#pure-c-flint-objects-and-functions" title="Link to this heading">#</a></h2>
 <p>Rounded floating point interval arithmetic and simple math functions in C</p>
 <dl class="c struct">
 <dt class="sig sig-object c" id="c.flint">
@@ -224,7 +227,7 @@ to a float.</p>
 </dd></dl>
 
 <section id="pre-defined-constants-in-flint-types">
-<span id="constants"></span><h2>Pre-defined constants in flint types<a class="headerlink" href="#pre-defined-constants-in-flint-types" title="Link to this heading">#</a></h2>
+<span id="constants"></span><h3>Pre-defined constants in flint types<a class="headerlink" href="#pre-defined-constants-in-flint-types" title="Link to this heading">#</a></h3>
 <p>These are the real number mathicatical constants as flint types. They the lower and
 upper boundaries are two consecutive floating point numbers that bound the actual
 constant, and the tracked value is the boundary value that is closer to the
@@ -250,7 +253,7 @@ constant’s value.</p>
 
 </section>
 <section id="casting-to-and-from-flints">
-<span id="casting"></span><span id="flint-pi-2"></span><h2>Casting to and from flints<a class="headerlink" href="#casting-to-and-from-flints" title="Link to this heading">#</a></h2>
+<span id="casting"></span><span id="flint-pi-2"></span><h3>Casting to and from flints<a class="headerlink" href="#casting-to-and-from-flints" title="Link to this heading">#</a></h3>
 <p>The following rules are followed when casting <em>to</em> flints:</p>
 <ol class="arabic simple">
 <li><p>For integers, if the integer can be exactly represented as a 64-bit float, then
@@ -286,7 +289,7 @@ point (c double) which can then be cast using standard C casting rules.</p>
 
 </section>
 <section id="floating-point-special-value-queries">
-<span id="special-value-query"></span><span id="flint-to-double"></span><h2>Floating point special value queries<a class="headerlink" href="#floating-point-special-value-queries" title="Link to this heading">#</a></h2>
+<span id="special-value-query"></span><span id="flint-to-double"></span><h3>Floating point special value queries<a class="headerlink" href="#floating-point-special-value-queries" title="Link to this heading">#</a></h3>
 <p>There are several special values in the <a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-754 floating point representation</a> including +/- infinity and not-a-number
 (NaN). Since those values might be fed as inputs into various functions that have
 been chained together, <a class="reference external" href="https://numpy.org/">numpy</a> requires four functions to check
@@ -317,7 +320,7 @@ tracked value are a NaN. <code class="docutils literal notranslate"><span class=
 
 </section>
 <section id="comparisons">
-<span id="flint-isinfinite"></span><span id="id2"></span><h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h2>
+<span id="flint-isinfinite"></span><span id="id2"></span><h3>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h3>
 <p>For comparisons we have to worry about equality as well as a sense or order (greater
 than or less than). Since flints are intervals, with an lower and upper boundary
 we can use standard <a class="reference external" href="https://en.wikipedia.org/wiki/Interval_order">interval order</a>
@@ -367,7 +370,7 @@ order. Specifically the equality of values is NOT transitive.</p>
 
 </section>
 <section id="arithmetic">
-<span id="flint-gt"></span><span id="id3"></span><h2>Arithmetic<a class="headerlink" href="#arithmetic" title="Link to this heading">#</a></h2>
+<span id="flint-gt"></span><span id="id3"></span><h3>Arithmetic<a class="headerlink" href="#arithmetic" title="Link to this heading">#</a></h3>
 <p>The IEEE-754 standard for floating point operations is as follows:</p>
 <ol class="arabic simple">
 <li><p>Assume that all input operand are exact</p></li>
@@ -381,7 +384,7 @@ out exact <a class="reference external" href="https://en.wikipedia.org/wiki/Inte
 and then round lower and upper the boundarys of the result down and up to gaurantee
 that the result lies somewhere in the new rounded interval.</p>
 <section id="unary-operations">
-<h3>Unary operations<a class="headerlink" href="#unary-operations" title="Link to this heading">#</a></h3>
+<h4>Unary operations<a class="headerlink" href="#unary-operations" title="Link to this heading">#</a></h4>
 <p>There are two unary operators defined:
 1. plus <code class="docutils literal notranslate"><span class="pre">+</span></code>
 2. negation <code class="docutils literal notranslate"><span class="pre">-</span></code></p>
@@ -397,10 +400,10 @@ that the result lies somewhere in the new rounded interval.</p>
 
 </section>
 <section id="binary-operations">
-<span id="flint-negative"></span><h3>Binary operations<a class="headerlink" href="#binary-operations" title="Link to this heading">#</a></h3>
+<span id="flint-negative"></span><h4>Binary operations<a class="headerlink" href="#binary-operations" title="Link to this heading">#</a></h4>
 <p>There are 4 binary operations defined and their in-place versions:</p>
 <section id="addition-and">
-<h4>Addition <code class="docutils literal notranslate"><span class="pre">+</span></code> and <code class="docutils literal notranslate"><span class="pre">+=</span></code><a class="headerlink" href="#addition-and" title="Link to this heading">#</a></h4>
+<h5>Addition <code class="docutils literal notranslate"><span class="pre">+</span></code> and <code class="docutils literal notranslate"><span class="pre">+=</span></code><a class="headerlink" href="#addition-and" title="Link to this heading">#</a></h5>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.flint_add">
 <span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f1</span></span>, <a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_add" title="Link to this definition">#</a><br /></dt>
@@ -428,7 +431,7 @@ that the result lies somewhere in the new rounded interval.</p>
 
 </section>
 <section id="subtraction-and">
-<span id="flint-inplace-add-scalar"></span><h4>Subtraction <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">-=</span></code><a class="headerlink" href="#subtraction-and" title="Link to this heading">#</a></h4>
+<span id="flint-inplace-add-scalar"></span><h5>Subtraction <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">-=</span></code><a class="headerlink" href="#subtraction-and" title="Link to this heading">#</a></h5>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.flint_subtract">
 <span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_subtract</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f1</span></span>, <a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_subtract" title="Link to this definition">#</a><br /></dt>
@@ -456,7 +459,7 @@ that the result lies somewhere in the new rounded interval.</p>
 
 </section>
 <section id="multiplication-and">
-<span id="flint-inplace-subtract-scalar"></span><h4>Multiplication <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">-=</span></code><a class="headerlink" href="#multiplication-and" title="Link to this heading">#</a></h4>
+<span id="flint-inplace-subtract-scalar"></span><h5>Multiplication <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">-=</span></code><a class="headerlink" href="#multiplication-and" title="Link to this heading">#</a></h5>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.flint_multiply">
 <span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_multiply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f1</span></span>, <a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_multiply" title="Link to this definition">#</a><br /></dt>
@@ -484,7 +487,7 @@ that the result lies somewhere in the new rounded interval.</p>
 
 </section>
 <section id="division-and">
-<span id="flint-inplace-mulitply-scalar"></span><h4>Division <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">/=</span></code><a class="headerlink" href="#division-and" title="Link to this heading">#</a></h4>
+<span id="flint-inplace-mulitply-scalar"></span><h5>Division <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">/=</span></code><a class="headerlink" href="#division-and" title="Link to this heading">#</a></h5>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.flint_divide">
 <span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_divide</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f1</span></span>, <a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_divide" title="Link to this definition">#</a><br /></dt>
@@ -508,13 +511,13 @@ that the result lies somewhere in the new rounded interval.</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.flint_inplace_divide_scalar">
 <span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_inplace_divide_scalar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">f</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_inplace_divide_scalar" title="Link to this definition">#</a><br /></dt>
-<dd><span class="target" id="flint-inplace-divide-scalar"></span></dd></dl>
+<dd></dd></dl>
 
-<dl class="c macro">
-<dt class="sig sig-object c" id="c.FLINT_MONOTONIC">
-<span class="sig-name descname"><span class="n"><span class="pre">FLINT_MONOTONIC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.FLINT_MONOTONIC" title="Link to this definition">#</a><br /></dt>
-<dd><section id="math-functions">
-<span id="mathfunctions"></span><h5>Math functions<a class="headerlink" href="#math-functions" title="Link to this heading">#</a></h5>
+</section>
+</section>
+</section>
+<section id="math-functions">
+<span id="mathfunctions"></span><span id="flint-inplace-divide-scalar"></span><h3>Math functions<a class="headerlink" href="#math-functions" title="Link to this heading">#</a></h3>
 <p>In addition to arithmetic, we need to make sure that we can apply most of the
 <cite>elementary</cite> functions to the flints and preserve our guarantee that the result
 interval included the exact value of the function applied to any value in the input
@@ -580,44 +583,152 @@ significantly slower compared to using floating point value directly</p>
 <p>The following functions defined in the c99 <code class="docutils literal notranslate"><span class="pre">math.h</span></code> header file have flint
 implementation with the following signature:</p>
 <dl class="c function">
-<dt class="sig sig-object c" id="c.FLINT_MONOTONIC.flint_FUNCNAME">
-<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_FUNCNAME</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">fa</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.FLINT_MONOTONIC.flint_FUNCNAME" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.flint_FUNCNAME">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flint_FUNCNAME</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">fa</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.flint_FUNCNAME" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">power</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">absolute</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sqrt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cbrt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hypot</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exp2</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">expm1</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log10</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log2</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log1p</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">erf</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">erfc</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sin</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cos</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tan</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asin</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">acos</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atan</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atan2</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sinh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cosh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tanh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asinh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">acosh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atanh</span></code></p></li>
-</ul>
-</section>
-</dd></dl>
+<section id="functions">
+<h4>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">power</span></code>
+<code class="docutils literal notranslate"><span class="pre">absolute</span></code>
+<code class="docutils literal notranslate"><span class="pre">sqrt</span></code>
+<code class="docutils literal notranslate"><span class="pre">cbrt</span></code>
+<code class="docutils literal notranslate"><span class="pre">hypot</span></code>
+<code class="docutils literal notranslate"><span class="pre">exp</span></code>
+<code class="docutils literal notranslate"><span class="pre">exp2</span></code>
+<code class="docutils literal notranslate"><span class="pre">expm1</span></code>
+<code class="docutils literal notranslate"><span class="pre">log</span></code>
+<code class="docutils literal notranslate"><span class="pre">log10</span></code>
+<code class="docutils literal notranslate"><span class="pre">log2</span></code>
+<code class="docutils literal notranslate"><span class="pre">log1p</span></code>
+<code class="docutils literal notranslate"><span class="pre">erf</span></code>
+<code class="docutils literal notranslate"><span class="pre">erfc</span></code>
+<code class="docutils literal notranslate"><span class="pre">sin</span></code>
+<code class="docutils literal notranslate"><span class="pre">cos</span></code>
+<code class="docutils literal notranslate"><span class="pre">tan</span></code>
+<code class="docutils literal notranslate"><span class="pre">asin</span></code>
+<code class="docutils literal notranslate"><span class="pre">acos</span></code>
+<code class="docutils literal notranslate"><span class="pre">atan</span></code>
+<code class="docutils literal notranslate"><span class="pre">atan2</span></code>
+<code class="docutils literal notranslate"><span class="pre">sinh</span></code>
+<code class="docutils literal notranslate"><span class="pre">cosh</span></code>
+<code class="docutils literal notranslate"><span class="pre">tanh</span></code>
+<code class="docutils literal notranslate"><span class="pre">asinh</span></code>
+<code class="docutils literal notranslate"><span class="pre">acosh</span></code>
+<code class="docutils literal notranslate"><span class="pre">atanh</span></code></p>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.FLINT_MONOTONIC">
+<span class="sig-name descname"><span class="n"><span class="pre">FLINT_MONOTONIC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.FLINT_MONOTONIC" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
 </section>
 </section>
+</section>
+<section id="python-c-extension-objects-and-functions">
+<span id="foo"></span><h2>Python C Extension objects and functions<a class="headerlink" href="#python-c-extension-objects-and-functions" title="Link to this heading">#</a></h2>
+<p>Python C-API for flints</p>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.PyFlint">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint</span></span></span><a class="headerlink" href="#c.PyFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>The python flint object</p>
+<dl class="c member">
+<dt class="sig sig-object c" id="c.PyFlint.obval">
+<a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">obval</span></span></span><a class="headerlink" href="#c.PyFlint.obval" title="Link to this definition">#</a><br /></dt>
+<dd><p>The flint c struct</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.PyFlint_Type_Ptr">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">PyTypeObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_Type_Ptr</span></span></span><a class="headerlink" href="#c.PyFlint_Type_Ptr" title="Link to this definition">#</a><br /></dt>
+<dd><p>A pointer to the PyTypeObject for the PyFlints</p>
+<p>Because of the programming standard or declaring everything static outside of
+enclosing functions, it is neccessary to use this pointer when you need to access
+the PyTypeObject* for the PyFlint instead of the direct address &amp;PyFlint_Type.</p>
+</dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.NPY_FLINT">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NPY_FLINT</span></span></span><a class="headerlink" href="#c.NPY_FLINT" title="Link to this definition">#</a><br /></dt>
+<dd><p>The integer enumeration for the custom ‘flint’ type in numpy.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.import_flint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">import_flint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.import_flint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Import the c api for numpy-flint python module</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success -1 on failure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_Check">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_Check</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_Check" title="Link to this definition">#</a><br /></dt>
+<dd><p>Check if an object is a flint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyObject to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if the object is a flint, 0 otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_FromFlint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_FromFlint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="n"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_FromFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a PyFlint object from a c flint struct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – The c flint struct</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new PyFlint object that contains a copy of f</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_AsFlint">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#c.flint" title="flint"><span class="n"><span class="pre">flint</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_AsFlint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_AsFlint" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get a C flint from a PyFlint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyFlint object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coresponding flint value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PyFlint_AsDouble">
+<span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyFlint_AsDouble</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PyObject</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PyFlint_AsDouble" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get a C double from a PyFlint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ob</strong> – The PyFlint object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coresponding flint center value</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -626,23 +737,15 @@ implementation with the following signature:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="c_ext_api.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Flint Python C Extension API</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="python_api.html">
+          
+          <a class="prev-page" href="c_ext.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Flint Python API</div>
+                <div class="title">C Extensions with flints</div>
                 
               </div>
             </a>
@@ -677,6 +780,7 @@ implementation with the following signature:</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Flint C API</a><ul>
+<li><a class="reference internal" href="#pure-c-flint-objects-and-functions">Pure C flint objects and functions</a><ul>
 <li><a class="reference internal" href="#pre-defined-constants-in-flint-types">Pre-defined constants in flint types</a></li>
 <li><a class="reference internal" href="#casting-to-and-from-flints">Casting to and from flints</a></li>
 <li><a class="reference internal" href="#floating-point-special-value-queries">Floating point special value queries</a></li>
@@ -692,6 +796,13 @@ implementation with the following signature:</p>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#math-functions">Math functions</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#python-c-extension-objects-and-functions">Python C Extension objects and functions</a></li>
 </ul>
 </li>
 </ul>

@@ -157,8 +157,9 @@
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_api.html">Flint Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel.html">Building and Testing from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c_ext.html">C Extensions with flints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="c_api.html">Flint C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="c_ext_api.html">Flint Python C Extension API</a></li>
 </ul>
 
 </div>
@@ -206,13 +207,10 @@ should be though of as ‘could be equal’.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_api.html">Flint Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel.html">Building and Testing from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c_ext.html">C Extensions with flints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="c_api.html">Flint C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="c_ext_api.html">Flint Python C Extension API</a></li>
 </ul>
-</div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Add a development/contribution page to the documentation</p>
 </div>
 <section id="why-what-purpose-do-rounded-floating-point-intervals-serve">
 <h2>Why? What purpose do rounded floating point intervals serve?<a class="headerlink" href="#why-what-purpose-do-rounded-floating-point-intervals-serve" title="Link to this heading">#</a></h2>
@@ -242,9 +240,9 @@ Here-in lies the first issue we can have with floating point numbers:</p>
 humble 1/3rd do not have finite decimal representations, and so they can not be
 represented exactly by floating point numbers. Frequently, we can not exactly capture
 the input needed for some mathematical calculations. For example, since we can not
-exactly represent <span class="math notranslate nohighlight">\(\pi\)</span> with floating point numbers the result of <span class="math notranslate nohighlight">\(\sin(
-\text{nfp}(\pi))\)</span>, where <span class="math notranslate nohighlight">\(\text{nfp}(x)\)</span> represents the ‘nearest floating point’
-to <span class="math notranslate nohighlight">\(x\)</span>, will be close to, but NOT equal zero.</p>
+exactly represent <span class="math notranslate nohighlight">\(\pi\)</span> with floating point numbers the result of
+<span class="math notranslate nohighlight">\(\sin(\text{nfp}(\pi))\)</span>, where <span class="math notranslate nohighlight">\(\text{nfp}(x)\)</span> represents the ‘nearest
+floating point’ to <span class="math notranslate nohighlight">\(x\)</span>, will be close to, but NOT equal zero.</p>
 <p>This limited ability to represent numbers leads to another consequence of floating point
 numbers:</p>
 <ol class="arabic simple" start="2">
@@ -319,15 +317,11 @@ numbers in the first place.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<dl class="simple">
-<dt>The following references are use for the description of the floating point interval</dt><dd><ul class="simple">
+<p>The following references are use for the description of the floating point interval</p>
+<ul class="simple">
 <li><p><a class="reference external" href="https://web.mit.edu/hyperbook/Patrikalakis-Maekawa-Cho/node46.html">Patrikalakis et al</a> contains
 details of the mathematical implementation of the flint objects</p></li>
-<li><p><a class="reference external" href="https://www.gnu.org/software/libc/manual/html_node/Errors-in-Math-Functions.html">Know Maximum Errors in Math Functions</a>
-from the gnu libc manual.</p></li>
 </ul>
-</dd>
-</dl>
 </section>
 </section>
 

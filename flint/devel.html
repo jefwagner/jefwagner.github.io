@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Flint Python API" href="python_api.html" /><link rel="prev" title="flint: Rounded Floating Point Intervals data type" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="C Extensions with flints" href="c_ext.html" /><link rel="prev" title="Flint Python API" href="python_api.html" />
 
     <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
-        <title>Installation and Basic Usage - flint 0.3.4 documentation</title>
+        <title>Building and Testing from Source - flint 0.3.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -155,9 +155,9 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation and Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installation and Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_api.html">Flint Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devel.html">Building and Testing from Source</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Building and Testing from Source</a></li>
 <li class="toctree-l1"><a class="reference internal" href="c_ext.html">C Extensions with flints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="c_api.html">Flint C API</a></li>
 </ul>
@@ -194,83 +194,87 @@
           </label>
         </div>
         <article role="main">
-          <section id="installation-and-basic-usage">
-<h1>Installation and Basic Usage<a class="headerlink" href="#installation-and-basic-usage" title="Link to this heading">#</a></h1>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>Binary packages are avialable from <a class="reference external" href="https://pypi.org/project/numpy-flint/">PyPI</a>. Use
-<code class="docutils literal notranslate"><span class="pre">pip</span></code> to install the binary package.</p>
+          <section id="building-and-testing-from-source">
+<h1>Building and Testing from Source<a class="headerlink" href="#building-and-testing-from-source" title="Link to this heading">#</a></h1>
+<p>There are several reason you might want to build the project from source instead of
+using the prebuild binarys from PyPI.</p>
+<ol class="arabic simple">
+<li><p>You might want to add your own awesome feature.</p></li>
+<li><p>You might want to run the project on one of the unsuppoted architechure.</p></li>
+<li><p>You might just want to mess around.</p></li>
+</ol>
+<p>In any case following the following steps to build the project locally.</p>
+<section id="cloning-the-repo-and-setting-up-development-environment">
+<h2>Cloning the repo and setting up development environment<a class="headerlink" href="#cloning-the-repo-and-setting-up-development-environment" title="Link to this heading">#</a></h2>
+<p>Numpy-flint is a python C-Extension project, so it builds using a C compiler to compile
+source code written in the C programming language. So the first step is getting a a C
+compiler installed and accessable through the command-line, usually mapped to the <cite>CC</cite>
+<cite>sysconfig</cite> variable or environment variable.</p>
+<p>Once you have a C compiler accessable, you need to clone the source code and change
+directorys into the newly created folder.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><style type="text/css">
 span.prompt1:before {
-  content: "$> ";
+  content: "$ ";
 }
-</style><span class="prompt1">pip<span class="w"> </span>install<span class="w"> </span>numpy-flint</span>
-</pre></div></div><p>Numpy-flint is a c-extension python module, and must be built for each python version,
-each operating system, and each hardware architechure. Binary packages have been built
-for most recent python versions and common architechures. If you find that your
-particular system is not supported you can try and <a class="reference external" href="devel.html">build the project form source</a></p>
+</style><span class="prompt1">git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jefwanger/numpy-flint.git</span>
+<span class="prompt1"><span class="nb">cd</span><span class="w"> </span>numpy-flint</span>
+</pre></div></div><p>It is strongly recommended that for all development work in python that you work in a
+separate development virtual environment. Using the built-in python venv package you
+can create a folder specific environment and activate it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt1">python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv</span>
+<span class="prompt1"><span class="nb">source</span><span class="w"> </span>.venv/bin/activate</span>
+</pre></div></div><p>Finally, you need to install the <cite>build</cite> and <cite>pytest</cite> packages in the development
+virtual environment using pip.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><style type="text/css">
+span.prompt2:before {
+  content: "(.venv) ";
+}
+</style><span class="prompt2">pip<span class="w"> </span>install<span class="w"> </span>build<span class="w"> </span>pytest</span>
+</pre></div></div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These commands are all assuming a bash terminal in linux or unix like environment,
+please substitute the appropriate commands for your specific terminal.</p>
+</div>
 </section>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
-<p>To use in python, import the flint package and declare the number as a flint type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flint</span> <span class="kn">import</span> <span class="n">flint</span>
-
-<span class="c1"># Floating point numbers sometimes don&#39;t make sense</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mf">0.2</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="c1"># This evaluate to False</span>
-<span class="nb">print</span><span class="p">(</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">a</span><span class="o">+</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">b</span> <span class="p">)</span>
-
-<span class="c1"># Rounded floating point intervals will fix these issues</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
-<span class="c1"># This evalautes to True</span>
-<span class="nb">print</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">x</span><span class="o">+</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>The flint type renders as a single number: the tracked value. To see the full interval
-you need to use the <code class="docutils literal notranslate"><span class="pre">interval</span></code> property which returns a tuple with the lower bound,
-upper bound. If all you need is the size of the interval, you can use the <code class="docutils literal notranslate"><span class="pre">eps</span></code>
-property.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c1"># shows 1.5</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span> <span class="c1"># shows (1.4999999999999998, 1.5000000000000002)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span> <span class="c1"># Shows 4.440892098500626e-16</span>
-</pre></div>
-</div>
-<p>In addition to arithmetic, many math functions have been implemented as methods on the
-flint object. To see a full list of supported math functions look at the <a class="reference external" href="python_api.html">python api</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span> <span class="c1"># 1.4142135623730951</span>
-</pre></div>
-</div>
-<p>In addition to a new python class, <code class="docutils literal notranslate"><span class="pre">flint``s</span> <span class="pre">have</span> <span class="pre">been</span> <span class="pre">added</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">custom</span> <span class="pre">dtype.</span> <span class="pre">To</span>
-<span class="pre">use</span> <span class="pre">with</span> <span class="pre">NumPy,</span> <span class="pre">import</span> <span class="pre">NumPy</span> <span class="pre">as</span> <span class="pre">well.</span> <span class="pre">Then</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">create</span> <span class="pre">your</span> <span class="pre">array</span> <span class="pre">as</span> <span class="pre">usual,</span> <span class="pre">simply</span>
-<span class="pre">mark</span> <span class="pre">the</span> <span class="pre">array's</span> <span class="pre">dtype</span> <span class="pre">as</span> <span class="pre">``flint</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">flint</span> <span class="kn">import</span> <span class="n">flint</span>
-
-<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">3</span><span class="p">,),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flint</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">flint</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
-<span class="c1"># This evaluates to True</span>
-<span class="nb">print</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">b</span> <span class="p">)</span> <span class="c1"># True</span>
-</pre></div>
-</div>
-<p>Finally all math functions have been added as recognized data-types to NumPy’s math
-functions, so you can write:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flint</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="c1"># np.array([0.0, 1.0,  1.4142135623730951, 1.7320508075688772, 2.0], dtype=flint)</span>
-</pre></div>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Working with floating point intervals is much slower than standard floating point
-operations, and should only be used where the added guarantee of ‘could be equal’ is
-required. Also note that the project is in an early and mostly untested state. As of
-right now, <code class="docutils literal notranslate"><span class="pre">numpy-flint</span></code> implements most real functions defined in the C99
-<code class="docutils literal notranslate"><span class="pre">math.h</span></code> header file, but lacks some of the functions for interacting with
-integers such as <code class="docutils literal notranslate"><span class="pre">round</span></code>, <code class="docutils literal notranslate"><span class="pre">ceil</span></code>, <code class="docutils literal notranslate"><span class="pre">floor</span></code>, and <code class="docutils literal notranslate"><span class="pre">fmod</span></code>.</p>
-</div>
+<section id="building-and-making-a-local-install">
+<h2>Building and making a local install<a class="headerlink" href="#building-and-making-a-local-install" title="Link to this heading">#</a></h2>
+<p>Now your development environment is set up, just make sure to activate the <cite>.venv</cite>
+virtual environment any time you take a break and come back to work on the project. To
+build the project you simply call python’s <cite>build</cite> module.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">python<span class="w"> </span>-m<span class="w"> </span>build</span>
+</pre></div></div><p>If this works, it will place a wheel file in the <cite>dist</cite> folder. If it doesn’t work it
+will show the output from the compiler showing you what step failed. You can install the
+wheel file directly with pip, but I have found it more convenient to do an editable
+install of the project in your build environment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.</span>
+</pre></div></div><p>This should place a dynamically linked library (.dll on windows, .so in linux, and
+.dynlib in macos) in the flint <cite>srcflint</cite> folder. You can then run the test cases
+from the command line with pytest.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">pytest</span>
+</pre></div></div></section>
+<section id="building-the-documentation">
+<h2>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://www.sphinx-doc.org/">sphinx</a> package is used to build the documentation.
+To rebuild the documentation you need to install sphinx (and the furo theme) into the
+development environment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">pip<span class="w"> </span>install<span class="w"> </span>sphinx<span class="w"> </span>furo</span>
+</pre></div></div><p>All of the documentation is either in the comments or docstrings in the source files or
+in the .rst files in the <cite>docs</cite> folder. To build the documentaiton you can use the
+<cite>sphinx-build`</cite></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs<span class="w"> </span>dist/html</span>
+</pre></div></div><p>which should create a copy of the documentation webpages in the <cite>dist/html</cite> subfolder.</p>
+</section>
+<section id="contributing-to-the-project">
+<h2>Contributing to the project<a class="headerlink" href="#contributing-to-the-project" title="Link to this heading">#</a></h2>
+<p>Numpy-flint is an open source project that was created and is maintained by a single
+person. If you would like to contribute, I encourage you to follow standard open source
+procedure:</p>
+<ol class="arabic simple">
+<li><p>Open up an issue on the <a class="reference external" href="https://github.com/jefwagner/numpy-flint/issues">Bug Tracker</a> with your proposal.</p></li>
+<li><p>Fork the project and create a new branch for your contribution.</p></li>
+<li><p>After testing, add create a pull request to merge your changes back into the project.</p></li>
+</ol>
+<p>A good resource I found is <a class="reference external" href="https://opensource.guide/how-to-contribute/">Open Source Guide’s how-to article</a>.</p>
 </section>
 </section>
 
@@ -279,23 +283,23 @@ integers such as <code class="docutils literal notranslate"><span class="pre">ro
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="python_api.html">
+          <a class="next-page" href="c_ext.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Flint Python API</div>
+                <div class="title">C Extensions with flints</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="python_api.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Flint Python API</div>
                 
               </div>
             </a>
@@ -329,9 +333,11 @@ integers such as <code class="docutils literal notranslate"><span class="pre">ro
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Installation and Basic Usage</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#">Building and Testing from Source</a><ul>
+<li><a class="reference internal" href="#cloning-the-repo-and-setting-up-development-environment">Cloning the repo and setting up development environment</a></li>
+<li><a class="reference internal" href="#building-and-making-a-local-install">Building and making a local install</a></li>
+<li><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
+<li><a class="reference internal" href="#contributing-to-the-project">Contributing to the project</a></li>
 </ul>
 </li>
 </ul>

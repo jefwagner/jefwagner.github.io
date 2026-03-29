@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Pixel-graphics canvas for text-based terminals."><title>termcanvas - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="termcanvas" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0 (ded5c06cf 2025-12-08)" data-channel="1.92.0" data-search-js="search-d69d8955.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../static.files/storage-e2aeef58.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-ce535bd0.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate termcanvas</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../termcanvas/index.html">termcanvas</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#terminal-requirements" title="Terminal requirements">Terminal requirements</a></li><li><a href="#example" title="Example">Example</a></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>termcanvas</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/termcanvas/lib.rs.html#4-489">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Pixel-graphics canvas for text-based terminals.</p>
+<p><code>termcanvas</code> exposes a canvas-like API for drawing colored pixels directly
+inside a running terminal emulator. The canvas is backed by two in-memory
+pixel buffers (current and previous). When you call
+<a href="struct.TerminalCanvas.html#method.render" title="method termcanvas::TerminalCanvas::render"><code>TerminalCanvas::render</code></a> only the character cells that changed since the
+last render are written to the terminal stream, keeping output minimal and
+flicker-free.</p>
+<p>Pixels are encoded using the Unicode UPPER HALF BLOCK character (<code>▀</code>)
+combined with ANSI 24-bit foreground and background colors. This lets each
+character cell carry two vertically-stacked pixels, so a terminal window
+that is <code>W</code> columns wide and <code>H</code> rows tall gives you a pixel canvas of
+<code>W × 2H</code> pixels.</p>
+<p><a href="struct.TerminalCanvas.html" title="struct termcanvas::TerminalCanvas"><code>TerminalCanvas</code></a> implements [<code>image::GenericImage</code>] and
+[<code>image::GenericImageView</code>], so any drawing function from the <code>image</code> crate
+that accepts a <code>GenericImage</code> — including image blitting, resizing, and
+compositing — can paint directly onto the canvas.</p>
+<h2 id="terminal-requirements"><a class="doc-anchor" href="#terminal-requirements">§</a>Terminal requirements</h2>
+<p><code>termcanvas</code> requires a modern terminal emulator with:</p>
+<ul>
+<li><strong>Unicode support</strong> — the <code>▀</code> (U+2580) half-block character must render
+as a single, full-width glyph.</li>
+<li><strong>24-bit (truecolor) ANSI color</strong> — both foreground and background colors
+are set with <code>ESC[38;2;r;g;bm</code> / <code>ESC[48;2;r;g;bm</code> sequences. Terminals
+that only support 8 or 256 colors will produce incorrect output.</li>
+<li><strong>Raw mode</strong> — the application is responsible for enabling and disabling
+raw mode via [<code>crossterm::terminal::enable_raw_mode</code>] /
+[<code>crossterm::terminal::disable_raw_mode</code>] around the drawing loop.</li>
+</ul>
+<p>Most modern terminal emulators (kitty, iTerm2, Alacritty, WezTerm, Windows
+Terminal, and recent versions of GNOME Terminal and macOS Terminal.app)
+satisfy all three requirements.</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<p>The following program fills the canvas with a dark background, draws a
+colored rectangle, places a single bright pixel, renders everything to
+stdout, then waits for a keypress before restoring the terminal.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>crossterm::{
+    QueueableCommand, cursor,
+    event::{<span class="self">self</span>, Event, KeyEventKind},
+    style::ResetColor,
+    terminal,
+};
+<span class="kw">use </span>image::{GenericImage, Rgba};
+<span class="kw">use </span>termcanvas::{CharRect, TerminalCanvas};
+<span class="kw">use </span>std::io::{Write, stdout};
+
+<span class="kw">fn </span>main() -&gt; std::io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>out = stdout();
+    terminal::enable_raw_mode()<span class="question-mark">?</span>;
+    out.queue(terminal::Clear(terminal::ClearType::All))<span class="question-mark">?</span>;
+    out.queue(cursor::Hide)<span class="question-mark">?</span>;
+
+    <span class="comment">// Create a canvas covering the full terminal, leaving one row at the
+    // top for a status line and one at the bottom for a prompt.
+    </span><span class="kw">let </span>(cols, rows) = terminal::size()<span class="question-mark">?</span>;
+    <span class="kw">let </span>rect = CharRect { left: <span class="number">0</span>, top: <span class="number">1</span>, width: cols, height: rows - <span class="number">2 </span>};
+    <span class="kw">let </span><span class="kw-2">mut </span>canvas = TerminalCanvas::new(<span class="kw-2">&amp;</span>rect);
+
+    <span class="comment">// Fill the whole canvas with a dark background color.
+    </span>canvas.fill(<span class="kw-2">&amp;</span>Rgba([<span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">255</span>]));
+
+    <span class="comment">// Draw a solid blue rectangle by setting individual pixels.
+    </span><span class="kw">let </span>blue = Rgba([<span class="number">30</span>, <span class="number">100</span>, <span class="number">220</span>, <span class="number">255</span>]);
+    <span class="kw">for </span>y <span class="kw">in </span><span class="number">10</span>..<span class="number">40 </span>{
+        <span class="kw">for </span>x <span class="kw">in </span><span class="number">10</span>..<span class="number">60 </span>{
+            canvas.put_pixel(x, y, blue);
+        }
+    }
+
+    <span class="comment">// Place a single bright-white pixel in the center of the rectangle.
+    </span>canvas.put_pixel(<span class="number">34</span>, <span class="number">24</span>, Rgba([<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>]));
+
+    <span class="comment">// Write only the changed cells to the terminal.
+    </span>canvas.render(<span class="kw-2">&amp;mut </span>out)<span class="question-mark">?</span>;
+
+    <span class="comment">// Status line above the canvas.
+    </span>out.queue(cursor::MoveTo(<span class="number">0</span>, <span class="number">0</span>))<span class="question-mark">?</span>;
+    out.queue(ResetColor)<span class="question-mark">?</span>;
+    <span class="macro">write!</span>(out, <span class="string">"Press any key to quit"</span>)<span class="question-mark">?</span>;
+    out.flush()<span class="question-mark">?</span>;
+
+    <span class="comment">// Wait for a keypress.
+    </span><span class="kw">loop </span>{
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(Event::Key(ke)) = event::read()
+            &amp;&amp; ke.kind == KeyEventKind::Press
+        {
+            <span class="kw">break</span>;
+        }
+    }
+
+    <span class="comment">// Restore the terminal.
+    </span>out.queue(terminal::Clear(terminal::ClearType::All))<span class="question-mark">?</span>;
+    out.queue(cursor::MoveTo(<span class="number">0</span>, rows - <span class="number">1</span>))<span class="question-mark">?</span>;
+    out.queue(ResetColor)<span class="question-mark">?</span>;
+    out.queue(cursor::Show)<span class="question-mark">?</span>;
+    out.flush()<span class="question-mark">?</span>;
+    terminal::disable_raw_mode()<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.CharRect.html" title="struct termcanvas::CharRect">Char<wbr>Rect</a></dt><dd>A rectangle in terminal character-cell coordinates.</dd><dt><a class="struct" href="struct.TerminalCanvas.html" title="struct termcanvas::TerminalCanvas">Terminal<wbr>Canvas</a></dt><dd>A pixel canvas occupying a rectangular region of the terminal.</dd></dl></section></div></main></body></html>

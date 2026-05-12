@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JefSCAD | Jef Wagner — Embedded Software Engineer </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <style>
+    :root {
+        /* Primary theme color */
+        --primary-color: #FED43F;
+        /* Primary theme text color */
+        --primary-text-color: #543631;
+        --primary-text-color-over: #000;
+        /* Primary theme link color */
+        --primary-link-color: #F9BB2D;
+        /* Secondary color: the background body color */
+        --secondary-color: #fcfaf6;
+        --secondary-text-color: #303030;
+        /* Highlight text color of table of content */
+        --toc-highlight-text-color: #d46e13;
+        --toc-background-color: white;
+        --code-color: #4a4a4a;
+        --code-background-color: white;
+
+        --shadow-color: #ddd;
+
+        /* Font used for headers (h1 & h2) */
+        --header-font-family: "Fira Sans", sans-serif;
+        /* Font used for text */
+        --text-font-family: "Fira Sans", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --primary-color: #382929;
+            --primary-text-color: #d7d7d7;
+            --primary-text-color-over: #FFF;
+            --primary-link-color: #9b9b9b;
+            --secondary-color: #282828;
+            --secondary-text-color: #f2f2f2;
+            --toc-highlight-text-color: #f2f2f2;
+            --toc-background-color: #3a3a3a;
+            --code-color: white;
+            --code-background-color: #4a4a4a;
+
+            --shadow-color: #202020;
+            --header-font-family: "Fira Sans", sans-serif;
+            --text-font-family: "Fira Sans", sans-serif;
+        }
+    }
+</style>
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="https://jefwagner.github.io/juice.css">
+    
+<link rel="stylesheet" href="https://jefwagner.github.io/carbon.css">
+<link rel="stylesheet" href="https://jefwagner.github.io/custom.css">
+
+</head>
+
+<body>
+    
+<header class="box-shadow">
+    
+
+<a href="https://jefwagner.github.io/">
+    <div class="logo">
+        
+        Jef Wagner
+    </div>
+</a>
+
+<nav>
+    
+        
+        <a class="nav-item subtitle-text" href="/about/">About</a>
+        
+        <a class="nav-item subtitle-text" href="/resume/">Resume</a>
+        
+        <a class="nav-item subtitle-text" href="/projects/">Projects</a>
+        
+        <a class="nav-item subtitle-text" href="https://github.com/jefwagner">GitHub</a>
+        
+    
+</nav>
+
+</header>
+
+
+    <main>
+        
+        
+        
+        
+        
+        <div class="toc">
+            <div class="toc-sticky">
+                
+                <div class="toc-item">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#jefscad">JefSCAD</a>
+                </div>
+                
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#the-problem"><small>- The Problem</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#the-architecture-three-levels"><small>- The Architecture: Three Levels</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#numerical-meshing-module"><small>- Numerical Meshing Module</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#ideal-usage"><small>- Ideal Usage</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#current-status"><small>- Current Status</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/jefscad/#related-projects"><small>- Related Projects</small></a>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+
+        <div class="content text">
+            
+<div class="heading-text">Programmatic 3D modeling kernel — from CSG to BRep to mesh, with Python bindings</div>
+<h1 id="jefscad">JefSCAD</h1>
+<p><em>Rust, Python bindings, CSG, BRep, NURBS, numerical meshing</em></p>
+<hr />
+<h2 id="the-problem">The Problem</h2>
+<p>I like OpenSCAD. Defining solids programmatically is the right way to do parametric 3D modeling. But OpenSCAD has two fundamental problems:</p>
+<ol>
+<li>
+<p><strong>Floating-point errors create thin sections.</strong> When combining or subtracting solids, floating point inaccuracies produce tiny slivers along boolean operation boundaries. They're invisible on screen but ruin 3D prints.</p>
+</li>
+<li>
+<p><strong>Immediate meshing loses fidelity.</strong> Objects are meshed at creation time. A cylinder becomes a faceted polygon immediately — stretch it into an ellipse and the facets stretch unevenly, revealing the fixed resolution.</p>
+</li>
+</ol>
+<p>There's a third desire: OpenSCAD's scripting language is limited. Real parametric modeling should live inside a <em>real</em> programming language.</p>
+<p>JefSCAD is my answer: a geometry kernel that keeps solids as mathematical objects until the final export step, embedded in Python with a Rust backend.</p>
+<hr />
+<h2 id="the-architecture-three-levels">The Architecture: Three Levels</h2>
+<p>The system operates through three successive representations:</p>
+<pre><code>CSG (tree) ──→ BRep (topology + geometry) ──→ Mesh (triangles)
+</code></pre>
+<h3 id="1-constructive-solid-geometry-csg">1. Constructive Solid Geometry (CSG)</h3>
+<p>A tree structure where:</p>
+<ul>
+<li><strong>Leaf nodes</strong> are primitives (cylinder, sphere, box, extrusion, solid of rotation)</li>
+<li><strong>Internal nodes</strong> are boolean operations (union, intersection, difference)</li>
+<li><strong>All nodes</strong> carry transforms (translate, rotate, scale)</li>
+</ul>
+<p>The tree is pure mathematical description — no meshing happens here. This means you can combine solids and the result stays exact until you explicitly compile it.</p>
+<p>Each node has a geometry hash for caching and a provenance ID for tracing which part of the tree produced which piece of the final solid.</p>
+<h3 id="2-boundary-representation-brep">2. Boundary Representation (BRep)</h3>
+<p>The BRep separates <em>topology</em> from <em>geometry</em>:</p>
+<table><thead><tr><th>Topology</th><th>Geometry</th></tr></thead><tbody>
+<tr><td>Solid → Shells</td><td>Surface (parametric: u,v → R³)</td></tr>
+<tr><td>Shell → Faces</td><td>Curve (parametric: t → R³)</td></tr>
+<tr><td>Face → Loops → Coedges</td><td>P-Curve (t → u,v for trimming)</td></tr>
+<tr><td>Coedge → Edge → Vertex</td><td>Point (x,y,z)</td></tr>
+</tbody></table>
+<p>A <strong>shell</strong> is a set of faces forming a closed manifold. A <strong>solid</strong> is an outer shell plus optional inner shells defining voids.</p>
+<p>Faces reference parametric <strong>surfaces</strong> (plane, cylinder, sphere, NURBS). Edges reference parametric <strong>curves</strong> (line, arc, NURBS). Coedges carry <strong>p-curves</strong> that trim the face boundary in the surface's (u,v) parameter space.</p>
+<p>This separation means: high-precision STEP export (using the exact surface/curve definitions), separate control over mesh resolution per face, and the ability to refine meshes locally without re-evaluating the entire boolean tree.</p>
+<h3 id="3-mesh">3. Mesh</h3>
+<p>An unstructured triangle mesh generated from the BRep:</p>
+<ul>
+<li><strong>Vertices</strong> with positions and vertex normals</li>
+<li><strong>Triangles</strong> with per-vertex normals and UV coordinates</li>
+<li><strong>Constraint tracking</strong> — which edges correspond to BRep edges (cannot be flipped during refinement)</li>
+<li><strong>Refinement</strong> — Delaunay triangulation with edge flips and point insertion for quality control</li>
+</ul>
+<hr />
+<h2 id="numerical-meshing-module">Numerical Meshing Module</h2>
+<p>This is what connects JefSCAD to the GPU Fluid Dynamics project. The meshing module exports solver-ready spatial data:</p>
+<ul>
+<li><strong>Voxelized volumes</strong> — identifying fluid cells vs. solid cells</li>
+<li><strong>Boundary-intersection maps</strong> — exact distance from cell center to geometry surface (for interpolated bounce-back in LBM)</li>
+<li><strong>Warped hex-grids</strong> — curvilinear coordinates that hug complex geometry while maintaining structured memory access</li>
+</ul>
+<hr />
+<h2 id="ideal-usage">Ideal Usage</h2>
+<pre><code data-lang="python">import jefscad
+
+# Start with primitives
+cyl = jefscad.cylinder(r=2, h=3)
+ball = jefscad.sphere(r=2.5)
+capped_sphere = jefscad.union(cyl, ball.translate(0, 0, 3))
+
+# Compile to BRep for precision / STEP export
+ctx = jefscad.new_context()
+brep = capped_sphere.compile_to_brep(ctx)
+brep.save_step(&quot;my_thing.step&quot;)
+
+# Generate a mesh for STL / OBJ / rendering
+mesh = capped_sphere.create_mesh(ctx)
+mesh.save_stl(&quot;my_thing.stl&quot;)
+mesh.save_obj(&quot;my_thing.obj&quot;)
+</code></pre>
+<hr />
+<h2 id="current-status">Current Status</h2>
+<p>JefSCAD is an active project. The CSG tree structure, BRep data model, and mesh generation strategy are fully specified. Current work focuses on:</p>
+<ul>
+<li>Implementing the CSG → BRep compilation (evaluating boolean operations against parametric surfaces)</li>
+<li>Building the half-edge mesh data structure with constraint-aware refinement</li>
+<li>Developing the Python bindings for the ergonomic API shown above</li>
+</ul>
+<p>The geometry kernel design is informed by my background in computational physics and finite element methods — the BRep data model draws directly from techniques used in FEM mesh generation.</p>
+<hr />
+<h2 id="related-projects">Related Projects</h2>
+<ul>
+<li><a href="/projects/gpu-fluid-dynamics/">GPU Fluid Dynamics</a> — consumes JefSCAD's numerical meshing for LBM simulation</li>
+<li><a href="/kb/wiki/Constructive-Solid-Geometry/">Constructive Solid Geometry</a> — detailed notes on the CSG tree structure (on wiki)</li>
+<li><a href="/kb/wiki/Boundary-Representation-BRep/">Boundary Representation (BRep)</a> — full topological data model (on wiki)</li>
+</ul>
+
+
+        </div>
+
+        
+        <div class="sidebar">
+            Your can customize the sidebar.
+            <!-- <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEBIL27E&placement=extensionsh" id="_carbonads_js"></script> -->
+        </div>
+        
+    </main>
+
+    
+<footer>
+    <small class="subtext">
+        <a href="https://github.com/jefwagner">GitHub</a> · <a href="mailto:jefwagner@gmail.com">Email</a>
+    </small>
+</footer>
+
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>

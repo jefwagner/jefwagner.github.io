@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Telematics Edge Application | Jef Wagner — Embedded Software Engineer </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <style>
+    :root {
+        /* Primary theme color */
+        --primary-color: #FED43F;
+        /* Primary theme text color */
+        --primary-text-color: #543631;
+        --primary-text-color-over: #000;
+        /* Primary theme link color */
+        --primary-link-color: #F9BB2D;
+        /* Secondary color: the background body color */
+        --secondary-color: #fcfaf6;
+        --secondary-text-color: #303030;
+        /* Highlight text color of table of content */
+        --toc-highlight-text-color: #d46e13;
+        --toc-background-color: white;
+        --code-color: #4a4a4a;
+        --code-background-color: white;
+
+        --shadow-color: #ddd;
+
+        /* Font used for headers (h1 & h2) */
+        --header-font-family: "Fira Sans", sans-serif;
+        /* Font used for text */
+        --text-font-family: "Fira Sans", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --primary-color: #382929;
+            --primary-text-color: #d7d7d7;
+            --primary-text-color-over: #FFF;
+            --primary-link-color: #9b9b9b;
+            --secondary-color: #282828;
+            --secondary-text-color: #f2f2f2;
+            --toc-highlight-text-color: #f2f2f2;
+            --toc-background-color: #3a3a3a;
+            --code-color: white;
+            --code-background-color: #4a4a4a;
+
+            --shadow-color: #202020;
+            --header-font-family: "Fira Sans", sans-serif;
+            --text-font-family: "Fira Sans", sans-serif;
+        }
+    }
+</style>
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="https://jefwagner.github.io/juice.css">
+    
+<link rel="stylesheet" href="https://jefwagner.github.io/carbon.css">
+<link rel="stylesheet" href="https://jefwagner.github.io/custom.css">
+
+</head>
+
+<body>
+    
+<header class="box-shadow">
+    
+
+<a href="https://jefwagner.github.io/">
+    <div class="logo">
+        
+        Jef Wagner
+    </div>
+</a>
+
+<nav>
+    
+        
+        <a class="nav-item subtitle-text" href="/about/">About</a>
+        
+        <a class="nav-item subtitle-text" href="/resume/">Resume</a>
+        
+        <a class="nav-item subtitle-text" href="/projects/">Projects</a>
+        
+        <a class="nav-item subtitle-text" href="https://github.com/jefwagner">GitHub</a>
+        
+    
+</nav>
+
+</header>
+
+
+    <main>
+        
+        
+        
+        
+        
+        <div class="toc">
+            <div class="toc-sticky">
+                
+                <div class="toc-item">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#telematics-edge-application">Telematics Edge Application</a>
+                </div>
+                
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#the-problem"><small>- The Problem</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#the-architecture"><small>- The Architecture</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#key-design-decisions"><small>- Key Design Decisions</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#the-debugging-that-shaped-it"><small>- The Debugging That Shaped It</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/telematics/#what-i-learned"><small>- What I Learned</small></a>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+
+        <div class="content text">
+            
+<div class="heading-text">On-vehicle telematics system — embedded Linux, Rust, CAN bus — from concept to production</div>
+<h1 id="telematics-edge-application">Telematics Edge Application</h1>
+<p><em>Rust, Embedded Linux, CAN bus, RTOS, MQTT, TLS</em></p>
+<hr />
+<h2 id="the-problem">The Problem</h2>
+<p>Pierce Manufacturing needed a way to collect, encrypt, and transmit vehicle telematics data from their fire apparatus in the field. The system had to:</p>
+<ul>
+<li>Read data from multiple CAN buses in real time</li>
+<li>Encrypt and filter it at the edge</li>
+<li>Transmit it over cellular to the cloud</li>
+<li>Be <strong>secure by design</strong> - the hardware unit is field-accessible for service, but application-level access has to go through authentication</li>
+</ul>
+<p>No existing off-the-shelf solution met all the constraints. So I designed and built one from scratch.</p>
+<hr />
+<h2 id="the-architecture">The Architecture</h2>
+<p>The system has two main layers:</p>
+<p><strong>Data-point collector (RTOS, HCS12)</strong>
+A dedicated microcontroller running a real-time OS. Its only job: aggregate sensor data from multiple CAN buses and present it over a dedicated channel to the application processor. This separation means the real-time data collection is never blocked by higher-level operations (encryption, cloud connectivity).</p>
+<p><strong>Edge application (Rust, embedded Linux)</strong>
+The main application runs on an embedded Linux board. It reads data from the collector, applies business logic (filtering, aggregation), encrypts it, and transmits it to the cloud over cellular. Written in Rust for memory safety and reliability —- a crash in the field means losing telemetry on an active emergency vehicle.</p>
+<hr />
+<h2 id="key-design-decisions">Key Design Decisions</h2>
+<p><strong>Security as the primary constraint.</strong> The hardware is in a service-accessible location on the truck. The application processor had to be locked down — authenticated access only, encrypted storage for credentials, TLS for all network communication. No unauthenticated debug interfaces in production.</p>
+<p><strong>Rust over C++ for the edge application.</strong> Memory safety without a GC, strong type system, and the embedded ecosystem was mature enough. The telematics workload is I/O-bound (CAN → encrypt → transmit), not compute-bound, so Rust's zero-cost abstractions fit naturally.</p>
+<p><strong>Separate collector for real-time data.</strong> Rather than having the Linux application talk to CAN controllers directly (which introduces scheduling latency), a dedicated RTOS microcontroller handles the real-time bus access. This also isolates the timing-critical path from the complexity of the Linux networking stack.</p>
+<hr />
+<h2 id="the-debugging-that-shaped-it">The Debugging That Shaped It</h2>
+<p>Two bugs found during development became design inputs for the next-generation architecture:</p>
+<p><strong>Wig-wag light timing failure.</strong> A 10ms RTOS task handling both timer updates and CAN queue processing would occasionally overrun, skipping the timer tick. The fix (moving the timer to a 1ms task) was simple, but the root cause - CAN queue processing could exceed its timeslice on trucks with many options - became a sizing requirement for the next controller.</p>
+<p><strong>CAN message corruption.</strong> A race condition in the vendor's CAN driver - a mutex released between copying message ID and message data - caused occasional spliced messages on ~5% of trucks. Reproduced on a bench running hand-crafted CAN traces for days. Patched the driver and rolled out to all active customers.</p>
+<hr />
+<h2 id="what-i-learned">What I Learned</h2>
+<p>This was the kind of project I love - figuring out the goals, finding the pain points, and assembling the right technology to address them. Every decision had a reason, and every constraint came from an actual operational need rather than a theoretical requirement.</p>
+<p>The two years from concept to production taught me that the hardest part of embedded systems design isn't the code - it's the boundary between hardware and software, the real-time constraints, and the security model that has to survive physical access.</p>
+
+
+        </div>
+
+        
+        <div class="sidebar">
+            Your can customize the sidebar.
+            <!-- <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEBIL27E&placement=extensionsh" id="_carbonads_js"></script> -->
+        </div>
+        
+    </main>
+
+    
+<footer>
+    <small class="subtext">
+        <a href="https://github.com/jefwagner">GitHub</a> · <a href="mailto:jefwagner@gmail.com">Email</a>
+    </small>
+</footer>
+
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Projects | Jef Wagner — Embedded Software Engineer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <style>
+    :root {
+        /* Primary theme color */
+        --primary-color: #FED43F;
+        /* Primary theme text color */
+        --primary-text-color: #543631;
+        --primary-text-color-over: #000;
+        /* Primary theme link color */
+        --primary-link-color: #F9BB2D;
+        /* Secondary color: the background body color */
+        --secondary-color: #fcfaf6;
+        --secondary-text-color: #303030;
+        /* Highlight text color of table of content */
+        --toc-highlight-text-color: #d46e13;
+        --toc-background-color: white;
+        --code-color: #4a4a4a;
+        --code-background-color: white;
+
+        --shadow-color: #ddd;
+
+        /* Font used for headers (h1 & h2) */
+        --header-font-family: "Fira Sans", sans-serif;
+        /* Font used for text */
+        --text-font-family: "Fira Sans", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --primary-color: #382929;
+            --primary-text-color: #d7d7d7;
+            --primary-text-color-over: #FFF;
+            --primary-link-color: #9b9b9b;
+            --secondary-color: #282828;
+            --secondary-text-color: #f2f2f2;
+            --toc-highlight-text-color: #f2f2f2;
+            --toc-background-color: #3a3a3a;
+            --code-color: white;
+            --code-background-color: #4a4a4a;
+
+            --shadow-color: #202020;
+            --header-font-family: "Fira Sans", sans-serif;
+            --text-font-family: "Fira Sans", sans-serif;
+        }
+    }
+</style>
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="https://jefwagner.github.io/juice.css">
+    
+<link rel="stylesheet" href="https://jefwagner.github.io/carbon.css">
+<link rel="stylesheet" href="https://jefwagner.github.io/custom.css">
+
+</head>
+
+<body>
+    
+<header class="box-shadow">
+    
+
+<a href="https://jefwagner.github.io/">
+    <div class="logo">
+        
+        Jef Wagner
+    </div>
+</a>
+
+<nav>
+    
+        
+        <a class="nav-item subtitle-text" href="/about/">About</a>
+        
+        <a class="nav-item subtitle-text" href="/resume/">Resume</a>
+        
+        <a class="nav-item subtitle-text" href="/projects/">Projects</a>
+        
+        <a class="nav-item subtitle-text" href="https://github.com/jefwagner">GitHub</a>
+        
+    
+</nav>
+
+</header>
+
+
+    <main>
+        
+        
+        
+        
+        
+        <div class="toc">
+            <div class="toc-sticky">
+                
+                <div class="toc-item">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/#projects">Projects</a>
+                </div>
+                
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/#notable-projects"><small>- Notable Projects</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/#active-projects"><small>- Active Projects</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/#projects-in-progress"><small>- Projects in Progress</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/#past-projects"><small>- Past Projects</small></a>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+
+        <div class="content text">
+            
+<div class="heading-text">Things I&#x27;ve built, designed, and debugged</div>
+<h1 id="projects">Projects</h1>
+<p>A selection of projects spanning embedded systems, simulation, and tools. Each one is something I built from the ground up — or debugged down to the register level.</p>
+<hr />
+<h2 id="notable-projects">Notable Projects</h2>
+<h3 id="telematics-edge-application"><a href="/projects/telematics/">Telematics Edge Application</a></h3>
+<p><em>Pierce Manufacturing — production system</em></p>
+<p>Designed and implemented the on-vehicle telematics system from scratch. Rust on embedded Linux reading CAN bus data via an RTOS-based microcontroller collector. Encrypted cellular transmission. Production in ~2 years.</p>
+<h3 id="can-driver-race-condition-debug"><a href="/projects/telematics/#can-message-corruption">CAN Driver Race Condition Debug</a></h3>
+<p><em>Pierce Manufacturing — deep-dive debugging</em></p>
+<p>Traced a ~5% intermittent corruption rate to a mutex race in the vendor's CAN driver. Built a bench setup that replayed traces for a week to reproduce. Patched the driver locally, rolled out to all customers.</p>
+<h3 id="hardware-in-the-loop-test-framework"><a href="/projects/hil-framework/">Hardware-in-the-Loop Test Framework</a></h3>
+<p><em>Pierce Manufacturing — test infrastructure</em></p>
+<p>Designed an automated HIL testing framework with a Python abstraction layer. Became the standard for new product testing at Pierce.</p>
+<h2 id="active-projects">Active Projects</h2>
+<h3 id="jefscad"><a href="/projects/jefscad/">JefSCAD</a></h3>
+<p><strong>Programmatic 3D modeling kernel</strong> — from CSG to BRep to mesh, with Python bindings.</p>
+<p>Improves on OpenSCAD by reducing floating-point errors and avoiding immediate meshing. Includes a numerical meshing module for CFD solver integration (voxelized volumes, boundary-intersection maps, warped hex-grids).</p>
+<p><em>Tech: Rust, Python bindings, CSG, BRep, NURBS, numerical meshing</em></p>
+<h3 id="pixel-world">Pixel World</h3>
+<p><strong>Hybrid 2D/3D pixel-art game engine in Rust</strong> — top-down exploration with 8-angle camera rotation.</p>
+<p>Combines the feel of classic top-down adventure games (Zelda, CrossCode) with camera rotation inspired by Fez. Fixed-timestep game loop, OkLab color system, WGPU rendering pipeline with separate mesh and sprite passes.</p>
+<p><em>Tech: Rust, WGPU, OkLab color, fixed-timestep physics</em></p>
+<h3 id="terminal-graphics-ecosystem">Terminal Graphics Ecosystem</h3>
+<p><strong>High-resolution terminal graphics in Rust</strong> — treating the terminal as a pixel canvas using Unicode half-block characters.</p>
+<p>Three projects in one: <strong>Termcanvas</strong> (core rendering library), <strong>Termsaver</strong> (procedural screensaver), and <strong>Termtet</strong> (interactive Tetris in the terminal). Layered architecture with shared rendering foundation.</p>
+<p><em>Tech: Rust, crossterm, ANSI TrueColor</em></p>
+<h3 id="ws281x-lights-controller">WS281x Lights Controller</h3>
+<p><strong>Raspberry Pi LED controller in Rust</strong> — with Home Assistant integration.</p>
+<p>Controls addressable RGB LED strips with precise timing. Integrates into smart home ecosystems for automated lighting scenes.</p>
+<p><em>Tech: Rust, Raspberry Pi, WS281x, Home Assistant, MQTT</em></p>
+<h3 id="llm-agent-harness">LLM Agent Harness</h3>
+<p><strong>LLM agent runtime</strong> — system prompt composition, tool execution, and conversation loop management.</p>
+<p>Explores the architecture that bridges a large language model with the outside world. Dynamic system prompt assembly, tool call routing, and context management patterns.</p>
+<p><em>Tech: Rust, LLM APIs, tool-use architecture, context window management</em></p>
+<hr />
+<h2 id="projects-in-progress">Projects in Progress</h2>
+<h3 id="z-synth">Z-Synth</h3>
+<p><strong>Bare-metal DSP synthesizer in Zig</strong> — running on RP2040 and ESP32 microcontrollers.</p>
+<p>A subtractive synthesizer built from first principles. Pre-calculates sine tables at compile-time using Zig's <code>comptime</code>. Talks to I2S DACs with zero-overhead I/O. No operating system, no runtime — just deterministic timing and direct register access.</p>
+<p><em>Tech: Zig, RP2040, RP2350, ESP32, I2S, MMIO</em></p>
+<h3 id="chess-engine-nace">Chess Engine / NACE</h3>
+<p><strong>Rust-based chess engine exploring neural network evaluation</strong> — with a focus on extracting human-understandable heuristics from attention weights.</p>
+<p>Standard search infrastructure (minimax, alpha-beta, iterative deepening, transposition table) with a Transformer-based evaluation function. The research goal: derive interpretable chess concepts from the neural network.</p>
+<p><em>Tech: Rust, Transformer networks, UCI protocol</em></p>
+<h3 id="quantum-canvas">Quantum Canvas</h3>
+<p><strong>Interactive quantum mechanics visualizer</strong> — browser-based Schrödinger equation solver.</p>
+<p>Users draw potential landscapes or initial wavefunctions and watch the probability amplitude evolve in real time. Uses Crank-Nicolson integration with Cayley transform for unitary evolution.</p>
+<p><em>Tech: JavaScript, HTML5 Canvas, FEM, Cayley transform</em></p>
+<h3 id="gpu-fluid-dynamics">GPU Fluid Dynamics</h3>
+<p><strong>Lattice Boltzmann Method solver on GPU</strong> — high-performance fluid dynamics using WGPU compute shaders.</p>
+<p>Models fluid flow around airfoils, turbines, and rocket bodies. Uses interpolated bounce-back for accurate boundary handling — avoids the stair-stepping artifacts of naive voxelization.</p>
+<p><em>Tech: Rust, WGPU compute shaders, LBM, CFD</em></p>
+<hr />
+<h2 id="past-projects">Past Projects</h2>
+<h3 id="browser-based-physics-simulations">Browser-Based Physics Simulations</h3>
+<p><em>Union College / Lawrence University — teaching tools</em></p>
+<p>Interactive physics simulations (orbital mechanics, coupled oscillators, projectile motion) written in Rust and compiled to WebAssembly with WebGL rendering. Used in introductory lab sections.</p>
+<h3 id="viral-self-assembly-simulation">Viral Self-Assembly Simulation</h3>
+<p><em>UC Riverside — research</em></p>
+<p>Coarse-grained molecular dynamics of viral capsid assembly on HPC clusters. Showed that minimal models reproduce the full range of observed shell symmetries. Published in Biophysical Journal.</p>
+<h3 id="c-method-casimir-calculations">C-Method Casimir Calculations</h3>
+<p><em>UC Riverside / OU — research</em></p>
+<p>First application of the C-method (from optics) to Casimir force calculations. Matched experimental measurements on periodic gratings. Published in Physical Review Letters.</p>
+<hr />
+
+
+        </div>
+
+        
+        <div class="sidebar">
+            Your can customize the sidebar.
+            <!-- <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEBIL27E&placement=extensionsh" id="_carbonads_js"></script> -->
+        </div>
+        
+    </main>
+
+    
+<footer>
+    <small class="subtext">
+        <a href="https://github.com/jefwagner">GitHub</a> · <a href="mailto:jefwagner@gmail.com">Email</a>
+    </small>
+</footer>
+
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>

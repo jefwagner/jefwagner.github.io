@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hardware-in-the-Loop Test Framework | Jef Wagner — Embedded Software Engineer </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <style>
+    :root {
+        /* Primary theme color */
+        --primary-color: #FED43F;
+        /* Primary theme text color */
+        --primary-text-color: #543631;
+        --primary-text-color-over: #000;
+        /* Primary theme link color */
+        --primary-link-color: #F9BB2D;
+        /* Secondary color: the background body color */
+        --secondary-color: #fcfaf6;
+        --secondary-text-color: #303030;
+        /* Highlight text color of table of content */
+        --toc-highlight-text-color: #d46e13;
+        --toc-background-color: white;
+        --code-color: #4a4a4a;
+        --code-background-color: white;
+
+        --shadow-color: #ddd;
+
+        /* Font used for headers (h1 & h2) */
+        --header-font-family: "Fira Sans", sans-serif;
+        /* Font used for text */
+        --text-font-family: "Fira Sans", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --primary-color: #382929;
+            --primary-text-color: #d7d7d7;
+            --primary-text-color-over: #FFF;
+            --primary-link-color: #9b9b9b;
+            --secondary-color: #282828;
+            --secondary-text-color: #f2f2f2;
+            --toc-highlight-text-color: #f2f2f2;
+            --toc-background-color: #3a3a3a;
+            --code-color: white;
+            --code-background-color: #4a4a4a;
+
+            --shadow-color: #202020;
+            --header-font-family: "Fira Sans", sans-serif;
+            --text-font-family: "Fira Sans", sans-serif;
+        }
+    }
+</style>
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="https://jefwagner.github.io/juice.css">
+    
+<link rel="stylesheet" href="https://jefwagner.github.io/carbon.css">
+<link rel="stylesheet" href="https://jefwagner.github.io/custom.css">
+
+</head>
+
+<body>
+    
+<header class="box-shadow">
+    
+
+<a href="https://jefwagner.github.io/">
+    <div class="logo">
+        
+        Jef Wagner
+    </div>
+</a>
+
+<nav>
+    
+        
+        <a class="nav-item subtitle-text" href="/about/">About</a>
+        
+        <a class="nav-item subtitle-text" href="/resume/">Resume</a>
+        
+        <a class="nav-item subtitle-text" href="/projects/">Projects</a>
+        
+        <a class="nav-item subtitle-text" href="https://github.com/jefwagner">GitHub</a>
+        
+    
+</nav>
+
+</header>
+
+
+    <main>
+        
+        
+        
+        
+        
+        <div class="toc">
+            <div class="toc-sticky">
+                
+                <div class="toc-item">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#hardware-in-the-loop-test-framework">Hardware-in-the-Loop Test Framework</a>
+                </div>
+                
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#the-problem"><small>- The Problem</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#the-approach"><small>- The Approach</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#the-result"><small>- The Result</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#technical-details"><small>- Technical Details</small></a>
+                </div>
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://jefwagner.github.io/projects/hil-framework/#what-i-learned"><small>- What I Learned</small></a>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+
+        <div class="content text">
+            
+<div class="heading-text">Automated HIL testing for fire apparatus ECUs — from manual switches to Python test scripts</div>
+<h1 id="hardware-in-the-loop-test-framework">Hardware-in-the-Loop Test Framework</h1>
+<p><em>Python, CAN bus, analog/digital I/O, CI/CD</em></p>
+<hr />
+<h2 id="the-problem">The Problem</h2>
+<p>Pierce Manufacturing's Hardware-in-the-Loop (HIL) simulator for fire apparatus ECUs was designed for manual testing. An engineer would sit at the test bench with mechanical switches and indicator lights, verifying behavior by hand. The process was:</p>
+<ul>
+<li>Slow - a full regression test could take days</li>
+<li>Error-prone - each engineer ran the tests slightly differently</li>
+<li>Untraceable - no automated test log to show what passed or failed</li>
+</ul>
+<p>The simulator hardware itself was capable. What was missing was a software layer that let engineers treat it like a programmable test system instead of a manual switchboard.</p>
+<hr />
+<h2 id="the-approach">The Approach</h2>
+<p>I pushed for automated test execution and built a <strong>Python abstraction layer</strong> that sat between the engineer's test scripts and the HIL hardware API.</p>
+<pre><code>Test script (Python) -&gt; Abstraction layer -&gt; HIL hardware API -&gt; ECU
+</code></pre>
+<p>The abstraction layer handled:</p>
+<ul>
+<li><strong>CAN bus message injection and monitoring</strong> - send a message, wait for a response, verify the payload</li>
+<li><strong>Analog and digital I/O control</strong> - set a voltage on a pin, read a sensor input, toggle a relay</li>
+<li><strong>Timing and sequencing</strong> - orchestrate multi-step test scenarios with precise timing</li>
+<li><strong>Pass/fail logic</strong> - compare observed behavior against expected behavior, with configurable tolerances</li>
+</ul>
+<p>The key insight was that the abstraction layer should hide the hardware details but expose the <em>operations</em> that engineers actually cared about: "send this CAN message and verify that response," not "set register 0x34 to value 0x7F."</p>
+<hr />
+<h2 id="the-result">The Result</h2>
+<p>The framework became the standard for new product testing at Pierce. Engineers could write test scripts in a few hours that would have taken days to run manually. The automated test suite could run overnight and produce a clean pass/fail report by morning.</p>
+<p>More importantly, the framework made testing <em>repeatable</em> - the same test run on two different days would produce identical results, which was impossible with manual testing. This made regression testing reliable enough to run before every release.</p>
+<hr />
+<h2 id="technical-details">Technical Details</h2>
+<p>The HIL simulator was built around a CAN bus backbone with analog and digital I/O channels all routed to I/O pins on National Intruments io modules. The Python abstraction layer communicated with the simulator hardware over a the python's Versistand package, sending commands and receiving responses in a custom protocol.</p>
+<p><strong>Key capabilities exposed through the abstraction layer:</strong></p>
+<ul>
+<li><strong>CAN message send/receive</strong> with filtering and pattern matching</li>
+<li><strong>Digital output</strong> - set a pin high or low</li>
+<li><strong>Digital input</strong> - read a pin state</li>
+<li><strong>Analog output</strong> - set a voltage level (e.g., 0-5V or 0-24V for truck systems)</li>
+<li><strong>Analog input</strong> - read a voltage level</li>
+<li><strong>Timed sequences</strong> - execute a series of operations with precise delays between them</li>
+<li><strong>Logging</strong> - every operation and its result recorded with timestamps</li>
+</ul>
+<hr />
+<h2 id="what-i-learned">What I Learned</h2>
+<p>The HIL framework was a reminder that the best engineering tools are the ones that make the <em>operator's</em> job easier. The hardware was perfectly capable - what was missing was someone to bridge the gap between what the hardware could do and what the engineers needed it to do.</p>
+<p>The Python abstraction layer was not technically complex. What made it valuable was that it removed friction. Engineers could focus on <em>what to test</em> instead of <em>how to drive the hardware</em>.</p>
+
+
+        </div>
+
+        
+        <div class="sidebar">
+            Your can customize the sidebar.
+            <!-- <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEBIL27E&placement=extensionsh" id="_carbonads_js"></script> -->
+        </div>
+        
+    </main>
+
+    
+<footer>
+    <small class="subtext">
+        <a href="https://github.com/jefwagner">GitHub</a> · <a href="mailto:jefwagner@gmail.com">Email</a>
+    </small>
+</footer>
+
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<meta name="description" content="A short, playable summary of Shakespeare's As You Like It, made with Godot.">
+		<meta property="og:title" content="As You Like It - 60 Second Summary">
+		<meta property="og:description" content="A short, playable summary of Shakespeare's As You Like It, made with Godot.">
+		<title>As You Like It - 60 Second Summary</title>
+		<style>
+:root {
+	color-scheme: dark;
+}
+
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	color: white;
+	background-color: #080312;
+	overflow: hidden;
+	touch-action: none;
+}
+
+#canvas {
+	display: block;
+}
+
+#canvas:focus {
+	outline: none;
+}
+
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
+
+#status {
+	background:
+		radial-gradient(circle at 50% 38%, #231044 0%, #100622 52%, #06020d 100%);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+	padding: 1.5rem;
+	text-align: center;
+}
+
+#status-splash {
+	position: static;
+	max-height: 30vh;
+	max-width: 30vh;
+	margin: 0;
+	border-radius: 1rem;
+	box-shadow: 0 0 3rem rgba(238, 193, 76, 0.18);
+}
+
+#status-splash.show-image--false {
+	display: none;
+}
+
+#status-splash.fullsize--true {
+	height: auto;
+	width: auto;
+	object-fit: contain;
+}
+
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
+
+#status-title {
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: clamp(2rem, 6vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: 0.055em;
+	line-height: 1.1;
+	margin: 1.15rem 0 0.35rem;
+	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+}
+
+#status-subtitle {
+	color: #cbb9ed;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	font-size: clamp(0.8rem, 2vw, 1rem);
+	letter-spacing: 0.16em;
+	margin: 0 0 1.6rem;
+	text-transform: uppercase;
+}
+
+#status-progress, #status-notice {
+	display: none;
+}
+
+#status-progress {
+	position: static;
+	width: min(18rem, 70vw);
+	height: 0.45rem;
+	accent-color: #eec14c;
+}
+
+#status-notice {
+	position: static;
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+
+#hint {
+	position: fixed;
+	left: 50%;
+	bottom: max(1rem, env(safe-area-inset-bottom));
+	transform: translateX(-50%);
+	z-index: 2;
+	padding: 0.55rem 1rem;
+	border: 1px solid rgba(238, 193, 76, 0.55);
+	border-radius: 999px;
+	background: rgba(8, 3, 18, 0.82);
+	box-shadow: 0 4px 22px rgba(0, 0, 0, 0.45);
+	color: #f4e9c7;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	font-size: clamp(0.72rem, 1.8vw, 0.9rem);
+	letter-spacing: 0.02em;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.35s ease;
+	white-space: nowrap;
+}
+
+#hint.show {
+	opacity: 1;
+}
+
+#hint.hidden {
+	opacity: 0;
+}
+
+#hint kbd {
+	display: inline-block;
+	padding: 0.05rem 0.4rem;
+	border: 1px solid rgba(244, 233, 199, 0.45);
+	border-bottom-width: 2px;
+	border-radius: 0.3rem;
+	background: rgba(255, 255, 255, 0.08);
+	font: inherit;
+}
+		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
+
+		<div id="status">
+			<img id="status-splash" class="show-image--true fullsize--false use-filter--false" src="index.png" alt="">
+			<h1 id="status-title">As You Like It</h1>
+			<p id="status-subtitle">A 60-second summary</p>
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
+
+		<div id="hint">Click, tap, or press <kbd>Space</kbd> to continue</div>
+
+		<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":85148,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
+
+(function () {
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
+	const hint = document.getElementById('hint');
+	let hintDismissed = false;
+
+	function showHint() {
+		if (!hintDismissed) {
+			hint.classList.add('show');
+		}
+	}
+
+	function dismissHint() {
+		hintDismissed = true;
+		hint.classList.remove('show');
+		hint.classList.add('hidden');
+	}
+
+	window.addEventListener('pointerdown', dismissHint);
+	window.addEventListener('keydown', dismissHint);
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			showHint();
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			// There's a chance that installing the service worker would fix the issue
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				// Reload if there was no error.
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			// Display the message as usual
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}());
+		</script>
+	</body>
+</html>
+

@@ -565,5 +565,28 @@ class BadLanguageSite(unittest.TestCase):
                                 "build with unknown language should fail")
 
 
+WORKFLOW = REPO / ".github" / "workflows" / "site.yml"
+
+
+class Workflow(unittest.TestCase):
+    """Invariants of the CI workflow (text checks; no YAML parser in stdlib)."""
+
+    def test_deploy_build_excludes_drafts(self):
+        builds = [line for line in read(WORKFLOW).splitlines()
+                  if "zola build" in line]
+        self.assertTrue(builds, "workflow has no `zola build` step")
+        for line in builds:
+            self.assertNotIn("--drafts", line)
+
+    def test_zola_version_matches_local(self):
+        pinned = re.search(r"^\s*ZOLA_VERSION:\s*([\d.]+)\s*$", read(WORKFLOW),
+                           re.MULTILINE)
+        self.assertIsNotNone(pinned, "ZOLA_VERSION not found in workflow")
+        local = subprocess.run([ZOLA, "--version"], capture_output=True,
+                               text=True, check=True).stdout.split()[-1]
+        self.assertEqual(pinned.group(1), local,
+                         "bump ZOLA_VERSION and ZOLA_SHA256 in the workflow")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

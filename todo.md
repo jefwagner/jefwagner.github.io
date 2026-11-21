@@ -11,7 +11,7 @@ branch, previewing it locally (and over SSH), and shipping it through a PR to
   instead of being skipped.
   Done: a pushed branch goes green; a throwaway bad-LaTeX commit goes red
   (then reverted).
-- [ ] **Deploy job.** On push to `main` (and `workflow_dispatch`), build and
+- [x] **Deploy job.** On push to `main` (and `workflow_dispatch`), build and
   deploy via `actions/upload-pages-artifact` + `actions/deploy-pages`, gated
   on the checks passing.
   Done: workflow is valid and the deploy job is skipped on non-`main` pushes;

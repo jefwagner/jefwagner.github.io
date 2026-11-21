@@ -4,7 +4,7 @@ Session goal: a documented, tested procedure for authoring a post on its own
 branch, previewing it locally (and over SSH), and shipping it through a PR to
 `main` — ending with the new site live.
 
-- [ ] **One check command + CI on every push/PR.** Add `scripts/check` so
+- [x] **One check command + CI on every push/PR.** Add `scripts/check` so
   that `check_site.py` and the converter tests run with one command under uv
   Python 3.12. Add a GitHub Actions workflow that builds with pinned Zola
   v0.23.6 and runs it with Node available, so the KaTeX render check runs

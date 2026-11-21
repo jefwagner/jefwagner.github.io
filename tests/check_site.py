@@ -7,6 +7,7 @@ never touched, and fixture posts are never written into the repo.
 """
 
 import hashlib
+import os
 import re
 import shutil
 import subprocess
@@ -50,6 +51,20 @@ def find_node():
 
 
 NODE = find_node()
+# Set REQUIRE_NODE=1 (as CI does) to make a missing node fail the run
+# instead of skipping the KaTeX render check.
+REQUIRE_NODE = os.environ.get("REQUIRE_NODE") == "1"
+
+
+def katex_check_status(node, require):
+    """None if the KaTeX check can run; else a reason string.
+    Raises RuntimeError if node is missing but required."""
+    if node:
+        return None
+    if require:
+        raise RuntimeError("REQUIRE_NODE=1 but node was not found on PATH or "
+                           "under ~/.nvm; the KaTeX render check cannot run")
+    return "node not installed; KaTeX render check skipped"
 KATEX_CHECK = REPO / "tests" / "katex_check.js"
 
 
@@ -453,12 +468,29 @@ class DraftsSite(unittest.TestCase):
         self.assertIn("export default function", src)
 
 
-@unittest.skipUnless(NODE, "node not installed; KaTeX render check skipped")
+class KatexCheckStatus(unittest.TestCase):
+
+    def test_runs_when_node_found(self):
+        self.assertIsNone(katex_check_status("/usr/bin/node", require=False))
+        self.assertIsNone(katex_check_status("/usr/bin/node", require=True))
+
+    def test_skips_when_node_missing_and_not_required(self):
+        reason = katex_check_status(None, require=False)
+        self.assertIn("node", reason)
+
+    def test_fails_when_node_missing_and_required(self):
+        with self.assertRaisesRegex(RuntimeError, "REQUIRE_NODE"):
+            katex_check_status(None, require=True)
+
+
 class KatexRender(unittest.TestCase):
     """Run every built post's math through the vendored KaTeX (throwOnError)."""
 
     @classmethod
     def setUpClass(cls):
+        skip = katex_check_status(NODE, REQUIRE_NODE)
+        if skip:
+            raise unittest.SkipTest(skip)
         cls.tmp = tempfile.TemporaryDirectory()
         cls.out = Path(cls.tmp.name) / "public"
         result = build(REPO, cls.out, drafts=True)

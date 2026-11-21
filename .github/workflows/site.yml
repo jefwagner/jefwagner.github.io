@@ -1,0 +1,47 @@
+# Build and check the site on every push and on PRs to main.
+# Locally the same checks run with: scripts/check
+name: site
+
+on:
+  push:             # every branch, so a post branch gets feedback before a PR
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ZOLA_VERSION: 0.23.6
+      # sha256 of zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+      ZOLA_SHA256: 8f5132b3522412d04e395e0b25f6d68613ad272a873e54a2b3ebf664873024a4
+      # Fail instead of skipping the KaTeX render check if node is missing.
+      REQUIRE_NODE: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Zola ${{ env.ZOLA_VERSION }}
+        run: |
+          tarball="zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl -sSfL -o "$tarball" \
+            "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/${tarball}"
+          echo "${ZOLA_SHA256}  ${tarball}" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "$tarball" -C "$HOME/.local/bin" zola
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          rm "$tarball"
+
+      - uses: astral-sh/setup-uv@v10
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: Run checks
+        run: |
+          zola --version
+          node --version
+          scripts/check

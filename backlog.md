@@ -1,8 +1,5 @@
 # Backlog
 
-- **First:** `AGENTS.md` for this repo before or with moving it out of
-  `~/lab/thermo/` (it is currently governed by thermo's AGENTS.md as a parent
-  directory, and agent memories are keyed to the thermo path).
 - GitHub Actions deploy workflow (pinned Zola v0.23.6); switch Pages source
   to "GitHub Actions" only when merging to `main`.
   With it: one command that runs both test suites under uv Python 3.12, and

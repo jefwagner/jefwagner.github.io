@@ -19,7 +19,7 @@ Items:
       *Done:* unit tests pass for table cells, `$$` with trailing spaces,
       math next to punctuation, an escaped `\$`, and inline math spanning a
       line break.
-- [ ] **2. KaTeX render check** in `tests/check_site.py`: for each built post
+- [x] **2. KaTeX render check** in `tests/check_site.py`: for each built post
       with `math = true`, run all its math through the vendored KaTeX in
       `node` with `throwOnError`. Skips (with a message) if `node` is missing.
       *Done:* passes on the fixture; fails on a fixture post with bad LaTeX.

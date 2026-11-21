@@ -40,6 +40,55 @@ def build(site_dir, out_dir, drafts=False):
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
+def find_node():
+    """Path to node, or None. Checks PATH, then nvm installs."""
+    found = shutil.which("node")
+    if found:
+        return found
+    nvm = sorted((Path.home() / ".nvm" / "versions" / "node").glob("*/bin/node"))
+    return str(nvm[-1]) if nvm else None
+
+
+NODE = find_node()
+KATEX_CHECK = REPO / "tests" / "katex_check.js"
+
+
+def katex_js():
+    """The vendored katex.min.js (found by glob so the version lives in one place)."""
+    found = sorted((REPO / "static" / "vendor").glob("katex-*/katex.min.js"))
+    if len(found) != 1:
+        raise RuntimeError(f"expected one vendored katex.min.js, found {found}")
+    return found[0]
+
+
+def katex_check(html_files):
+    """Run tests/katex_check.js on built HTML files."""
+    return subprocess.run(
+        [NODE, str(KATEX_CHECK), str(katex_js())] + [str(f) for f in html_files],
+        capture_output=True, text=True)
+
+
+def math_pages(out_dir):
+    """Built pages that load katex.min.js (i.e. have [extra] math = true)."""
+    return sorted(p for p in Path(out_dir).rglob("index.html")
+                  if re.search(r'<script[^>]+src="[^"]*/katex\.min\.js"', read(p)))
+
+
+FIXTURE_BAD_LATEX = """+++
+title = "Bad LaTeX fixture"
+date = 2026-03-01
+
+[extra]
+math = true
++++
+Inline `$\\notacommand$` here.
+
+```math
+\\frac{a}{
+```
+"""
+
+
 FIXTURE_SLUG = "fixture-math-widgets"
 EXTRA_ASSETS = ["katex", "math.js", "plotly", "widgets.js"]
 
@@ -402,6 +451,54 @@ class DraftsSite(unittest.TestCase):
     def test_widget_contract(self):
         src = read(self.out / "posts" / FIXTURE_SLUG / "sine.js")
         self.assertIn("export default function", src)
+
+
+@unittest.skipUnless(NODE, "node not installed; KaTeX render check skipped")
+class KatexRender(unittest.TestCase):
+    """Run every built post's math through the vendored KaTeX (throwOnError)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.out = Path(cls.tmp.name) / "public"
+        result = build(REPO, cls.out, drafts=True)
+        if result.returncode != 0:
+            raise RuntimeError("drafts build failed:\n" + result.stderr)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_math_pages_detected(self):
+        pages = [p.relative_to(self.out).as_posix() for p in math_pages(self.out)]
+        self.assertIn(f"posts/{FIXTURE_SLUG}/index.html", pages)
+        for route in ["index.html", "posts/index.html", "about/index.html"]:
+            self.assertNotIn(route, pages)
+
+    def test_all_math_pages_render(self):
+        pages = math_pages(self.out)
+        result = katex_check(pages)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        oks = [l for l in result.stdout.splitlines() if l.startswith("ok ")]
+        self.assertEqual(len(oks), len(pages), result.stdout)
+
+    def test_bad_latex_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            site = make_fixture_site(root, {"bad-latex.md": FIXTURE_BAD_LATEX})
+            built = build(site, root / "public")
+            self.assertEqual(built.returncode, 0, built.stderr)
+            page = root / "public" / "posts" / "bad-latex" / "index.html"
+            result = katex_check([page])
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        fails = [l for l in result.stdout.splitlines() if l.startswith("FAIL ")]
+        self.assertEqual(len(fails), 2, result.stdout)
+        self.assertTrue(any(": display: " in l for l in fails), fails)
+        self.assertTrue(any(": inline: " in l for l in fails), fails)
+
+    def test_no_math_is_usage_error(self):
+        result = katex_check([self.out / "about" / "index.html"])
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
 
 
 class TeraBracesSite(unittest.TestCase):

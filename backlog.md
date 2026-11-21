@@ -9,3 +9,7 @@
 - Move this clone out of `~/lab/thermo/` (it currently shows as untracked
   there).
 - RSS/Atom feed and favicon.
+- Manual light/dark theme toggle (currently follows the browser). Note:
+  Giallo writes `color-scheme: light dark` inline on every `<pre>`, so code
+  blocks would ignore a toggle; set `add_color_scheme = false` under
+  `[markdown.highlighting]` and drive `color-scheme` from the toggle.

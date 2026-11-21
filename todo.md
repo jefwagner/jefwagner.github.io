@@ -14,7 +14,7 @@ widget support. All prose is jef's; templates and stubs only carry
       *Done:* `zola build` succeeds; posts live at `/posts/<slug>/`; landing
       page lists posts; `public/as-you-like-it/index.html` is byte-identical
       to the source.
-- [ ] **3. Theme: Ayu Dark, high contrast, editor-style.** One stylesheet with
+- [x] **3. Theme: Ayu Dark, high contrast, editor-style.** One stylesheet with
       the palette as CSS variables; Ayu Dark by default, Ayu Light when the
       browser requests light (`prefers-color-scheme: light`). Sans for prose,
       monospace for code, a matching code-highlighting theme, and a hero-banner

@@ -1,0 +1,145 @@
+/* Site theme: Ayu Dark by default, Ayu Light when the browser asks for light.
+ *
+ * Colors are Ayu's, except where Ayu's value fails WCAG AA (4.5:1) for text:
+ *   dark  --fg-muted  #565B66 -> #8A9199 (Ayu Light's UI gray)
+ *   light --fg-muted  #8A9199 -> #6B7178
+ *   light --link      #399EE6 -> #1F6FB2 (darkened Ayu blue)
+ *   light --hero-fg   #FFAA33 -> #8F5000 (darkened Ayu orange)
+ * tests/check_site.py checks the contrast pairs in both modes.
+ *
+ * Code blocks: ayu-dark in dark mode, but github-light in light mode,
+ * because ayu-light's syntax colors fail AA (1.9-3.2:1). See config.toml.
+ */
+
+:root {
+  color-scheme: dark;
+  --bg: #0D1017;
+  --bg-raised: #131721;
+  --fg: #BFBDB6;
+  --fg-muted: #8A9199;
+  --accent: #E6B450;
+  --link: #59C2FF;
+  --border: #1F2430;
+  --code-bg: #0D1017;     /* matches Giallo's inline ayu-dark background */
+  --hero-bg: #131721;
+  --hero-fg: #E6B450;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --measure: 42rem;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #FCFCFC;
+    --bg-raised: #F3F4F5;
+    --fg: #5C6166;
+    --fg-muted: #6B7178;
+    --accent: #FFAA33;
+    --link: #1F6FB2;
+    --border: #E1E4E8;
+    --code-bg: #FFFFFF;   /* matches Giallo's inline github-light background */
+    --hero-bg: #F3F4F5;
+    --hero-fg: #8F5000;
+  }
+}
+
+/* --- base ------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+a { color: var(--link); }
+a:hover { text-decoration-thickness: 2px; }
+
+h1, h2, h3, h4 { line-height: 1.25; color: var(--fg); }
+h1 { font-size: 2rem; }
+
+time, .post-description { color: var(--fg-muted); }
+
+/* --- hero ------------------------------------------------------------- */
+
+.hero {
+  background-color: var(--hero-bg);
+  background-size: cover;
+  background-position: center;
+  color: var(--hero-fg);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 16px 3rem;
+}
+
+.hero > * { max-width: var(--measure); margin-left: auto; margin-right: auto; }
+
+.site-nav { display: flex; gap: 1.25rem; }
+.site-nav a { color: var(--hero-fg); text-decoration: none; font-weight: 600; }
+.site-nav a:hover { text-decoration: underline; }
+
+.site-title {
+  margin-top: 2.5rem;
+  margin-bottom: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+/* --- content column ---------------------------------------------------- */
+
+main {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.5rem 16px 4rem;
+}
+
+.post-list { list-style: none; padding: 0; }
+.post-list li { margin: 0 0 1.25rem; }
+.post-list a { font-weight: 600; }
+.post-list time { margin-left: 0.5rem; font-size: 0.9rem; }
+.post-description { margin: 0.25rem 0 0; }
+
+/* --- code -------------------------------------------------------------- */
+
+code, pre { font-family: var(--font-mono); font-size: 0.9em; }
+
+:not(pre) > code {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+
+/* Required by Zola's Giallo highlighter (see Zola syntax-highlighting docs). */
+.giallo-l {
+  display: inline-block;
+  min-height: 1lh;
+  width: 100%;
+}
+.giallo-ln {
+  display: inline-block;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0.4em;
+  min-width: 3ch;
+  text-align: right;
+  opacity: 0.8;
+}

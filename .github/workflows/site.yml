@@ -1,0 +1,79 @@
+# Build and check the site on every push and on PRs to main; deploy to
+# GitHub Pages on push to main (or a manual run on main) once checks pass.
+# Locally the same checks run with: scripts/check
+name: site
+
+on:
+  push:             # every branch, so a post branch gets feedback before a PR
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ZOLA_VERSION: 0.23.6
+      # sha256 of zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+      ZOLA_SHA256: 8f5132b3522412d04e395e0b25f6d68613ad272a873e54a2b3ebf664873024a4
+      # Fail instead of skipping the KaTeX render check if node is missing.
+      REQUIRE_NODE: "1"
+      # Deploy only from main, on push or manual dispatch; never from PRs or
+      # other branches. Must match the deploy job's `if:` below.
+      DEPLOY: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Zola ${{ env.ZOLA_VERSION }}
+        run: |
+          tarball="zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl -sSfL -o "$tarball" \
+            "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/${tarball}"
+          echo "${ZOLA_SHA256}  ${tarball}" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "$tarball" -C "$HOME/.local/bin" zola
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          rm "$tarball"
+
+      # setup-uv publishes no moving major tag (v10); pin the exact release.
+      - uses: astral-sh/setup-uv@v10.4.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: Run checks
+        run: |
+          zola --version
+          node --version
+          scripts/check
+
+      # Built here so Zola is installed once. No --drafts: drafts never ship.
+      - name: Build site for Pages
+        if: ${{ env.DEPLOY == 'true' }}
+        run: zola build --output-dir public
+
+      - uses: actions/upload-pages-artifact@v5
+        if: ${{ env.DEPLOY == 'true' }}
+        with:
+          path: public
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false   # never abort a deploy midway
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v5

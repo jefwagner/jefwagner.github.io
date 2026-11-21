@@ -1,0 +1,6 @@
+{
+  "name": "math",
+  "scopeName": "source.math",
+  "fileTypes": ["math"],
+  "patterns": []
+}

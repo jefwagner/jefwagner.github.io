@@ -1,0 +1,22 @@
+base_url = "https://jefwagner.github.io"
+title = "Jef Wagner"
+compile_sass = false
+build_search_index = false
+generate_feeds = false
+
+[markdown.highlighting]
+# An unknown code-fence language fails the build instead of rendering plain.
+error_on_missing_language = true
+# Dual themes: with the default inline style, colors are emitted as
+# light-dark(<light>, <dark>) and follow the page's color-scheme.
+# Light code uses github-light: ayu-light syntax colors fail WCAG AA (1.9-3.2:1).
+light_theme = "github-light"
+dark_theme = "ayu-dark"
+# Minimal grammar so ```math fences pass error_on_missing_language; their
+# text is passed through untouched and rendered by static/math.js (KaTeX).
+extra_grammars = ["grammars/math.json"]
+
+[extra]
+# Site-wide hero banner image, as a path under static/. Empty means a solid
+# color block. A page can override it with [extra] hero_image in front matter.
+hero_image = ""

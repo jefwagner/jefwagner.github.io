@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+  <link rel="stylesheet" href="{{ get_url(path="style.css") }}">
+  {#- Opt-in per page via front matter [extra]: math, plotly, widgets.
+      plotly implies widgets. Order matters: deferred classic scripts and
+      module scripts run in document order, so libraries come first. -#}
+  {%- if page and page.extra.math %}
+  <link rel="stylesheet" href="{{ get_url(path="vendor/katex-0.19.1/katex.min.css") }}">
+  <script defer src="{{ get_url(path="vendor/katex-0.19.1/katex.min.js") }}"></script>
+  <script defer src="{{ get_url(path="math.js") }}"></script>
+  {%- endif %}
+  {%- if page and page.extra.plotly %}
+  <script defer src="{{ get_url(path="vendor/plotly-basic-4.2.0.min.js") }}"></script>
+  {%- endif %}
+  {%- if page and (page.extra.widgets or page.extra.plotly) %}
+  <script type="module" src="{{ get_url(path="widgets.js") }}"></script>
+  {%- endif %}
+  {% block head %}{% endblock head %}
+</head>
+<body>
+  {#- Hero image: the page's [extra] hero_image, else the site's, else none. -#}
+  {%- set hero_image = config.extra.hero_image | default(value="") %}
+  {%- if page and page.extra.hero_image %}{% set hero_image = page.extra.hero_image %}{% endif %}
+  {% block hero %}
+  <header class="hero"{% if hero_image %} style="background-image: url('{{ get_url(path=hero_image) }}')"{% endif %}>
+    <nav class="site-nav">
+      <a href="{{ get_url(path="@/_index.md") }}">Home</a>
+      <a href="{{ get_url(path="@/posts/_index.md") }}">Posts</a>
+      <a href="{{ get_url(path="@/about.md") }}">About</a>
+    </nav>
+    <p class="site-title">{{ config.title }}</p>
+  </header>
+  {% endblock hero %}
+  <main>
+    {% block content %}{% endblock content %}
+  </main>
+</body>
+</html>

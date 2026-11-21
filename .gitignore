@@ -1,0 +1,5 @@
+# Zola build output
+/public/
+
+# Python bytecode from running tests/
+__pycache__/

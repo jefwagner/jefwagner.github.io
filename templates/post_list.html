@@ -1,0 +1,10 @@
+{#- Partial: render a list of pages as post entries. Expects `pages`. -#}
+<ul class="post-list">
+  {%- for p in pages %}
+  <li>
+    <a href="{{ p.permalink | safe }}">{{ p.title }}</a>
+    {%- if p.date %} <time datetime="{{ p.date }}">{{ p.date | date(format="%Y-%m-%d") }}</time>{% endif %}
+    {%- if p.description %}<p class="post-description">{{ p.description }}</p>{% endif %}
+  </li>
+  {%- endfor %}
+</ul>

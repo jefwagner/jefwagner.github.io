@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Run all site checks: the build checks and the script unit tests
+# (notes_to_post, new_post), under uv Python 3.12. Runs every suite even if
+# one fails; exits non-zero if any did. Set REQUIRE_NODE=1 to fail (not
+# skip) the KaTeX render check when node is missing.
+# Usage: scripts/check
+set -uo pipefail
+cd "$(dirname "$0")/.."
+status=0
+uv run --no-project --python 3.12 tests/check_site.py         || status=1
+uv run --no-project --python 3.12 tests/test_notes_to_post.py || status=1
+uv run --no-project --python 3.12 tests/test_new_post.py      || status=1
+exit $status

@@ -16,7 +16,7 @@ branch, previewing it locally (and over SSH), and shipping it through a PR to
   on the checks passing.
   Done: workflow is valid and the deploy job is skipped on non-`main` pushes;
   its first real run is in the go-live item.
-- [ ] **`scripts/new_post <slug>` + `notes/post-workflow.md`.** The script
+- [x] **`scripts/new_post <slug>` + `notes/post-workflow.md`.** The script
   refuses a dirty tree or an existing slug/branch, fetches and creates
   `post/<slug>` from `origin/main`, writes `content/posts/<slug>/index.md`
   (placeholder title, today's date, `draft = true`, `[extra]` switches

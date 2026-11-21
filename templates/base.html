@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <link rel="stylesheet" href="{{ get_url(path="style.css") }}">
+  {#- Opt-in per page via front matter [extra]: math, plotly, widgets.
+      plotly implies widgets. Order matters: deferred classic scripts and
+      module scripts run in document order, so libraries come first. -#}
+  {%- if page and page.extra.math %}
+  <link rel="stylesheet" href="{{ get_url(path="vendor/katex-0.19.1/katex.min.css") }}">
+  <script defer src="{{ get_url(path="vendor/katex-0.19.1/katex.min.js") }}"></script>
+  <script defer src="{{ get_url(path="math.js") }}"></script>
+  {%- endif %}
+  {%- if page and page.extra.plotly %}
+  <script defer src="{{ get_url(path="vendor/plotly-basic-4.2.0.min.js") }}"></script>
+  {%- endif %}
+  {%- if page and (page.extra.widgets or page.extra.plotly) %}
+  <script type="module" src="{{ get_url(path="widgets.js") }}"></script>
+  {%- endif %}
   {% block head %}{% endblock head %}
 </head>
 <body>

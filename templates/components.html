@@ -1,0 +1,10 @@
+{#- Tera components usable from templates and from post markdown (Zola 0.23+).
+    In markdown:  {{ <widget src="sine.js" height={360} /> }}  -#}
+
+{#- An interactive figure. `src` is an ES module next to the post (page bundle)
+    exporting `default function mount(el)`; static/widgets.js imports it and
+    calls mount() with this div. Needs [extra] widgets = true (or plotly = true)
+    in the post's front matter so widgets.js is loaded. -#}
+{% component widget(src, height=400) %}
+<div class="widget" data-src="{{ src }}" style="height:{{ height }}px"></div>
+{% endcomponent widget %}

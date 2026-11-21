@@ -21,7 +21,7 @@ widget support. All prose is jef's; templates and stubs only carry
       slot at the top of the page (solid block until a real image exists).
       *Done:* both modes render; body text and link colors meet WCAG AA
       contrast against their backgrounds.
-- [ ] **4. Math and widgets.** KaTeX auto-render with default (LaTeX-style)
+- [x] **4. Math and widgets.** KaTeX auto-render with default (LaTeX-style)
       fonts; a `widget` shortcode that embeds a post's own JS / Plotly figure;
       a **draft** fixture post (placeholder text, an equation, a code block,
       one sample slider widget).

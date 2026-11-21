@@ -12,6 +12,9 @@ error_on_missing_language = true
 # Light code uses github-light: ayu-light syntax colors fail WCAG AA (1.9-3.2:1).
 light_theme = "github-light"
 dark_theme = "ayu-dark"
+# Minimal grammar so ```math fences pass error_on_missing_language; their
+# text is passed through untouched and rendered by static/math.js (KaTeX).
+extra_grammars = ["grammars/math.json"]
 
 [extra]
 # Site-wide hero banner image, as a path under static/. Empty means a solid

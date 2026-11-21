@@ -31,13 +31,31 @@ def find_zola():
 ZOLA = find_zola()
 
 
-def build(site_dir, out_dir):
+def build(site_dir, out_dir, drafts=False):
     """Run `zola build` for site_dir into out_dir; return the CompletedProcess."""
-    return subprocess.run(
-        [ZOLA, "--root", str(site_dir), "build", "--output-dir", str(out_dir),
-         "--force"],
-        capture_output=True, text=True,
-    )
+    cmd = [ZOLA, "--root", str(site_dir), "build", "--output-dir", str(out_dir),
+           "--force"]
+    if drafts:
+        cmd.append("--drafts")
+    return subprocess.run(cmd, capture_output=True, text=True)
+
+
+FIXTURE_SLUG = "fixture-math-widgets"
+EXTRA_ASSETS = ["katex", "math.js", "plotly", "widgets.js"]
+
+
+def script_and_link_refs(html):
+    """All src/href values of <script> and <link> tags, in document order."""
+    return re.findall(r'<(?:script|link)\b[^>]*?(?:src|href)="([^"]+)"', html)
+
+
+def text_of(fragment):
+    """Strip tags and decode the few entities Zola emits."""
+    text = re.sub(r"<[^>]+>", "", fragment)
+    for ent, ch in [("&lt;", "<"), ("&gt;", ">"), ("&quot;", '"'),
+                    ("&#39;", "'"), ("&amp;", "&")]:
+        text = text.replace(ent, ch)
+    return text
 
 
 def sha256(path):
@@ -236,6 +254,32 @@ class RealSite(unittest.TestCase):
         self.assertIsNotNone(hero, "landing has no hero header")
         self.assertNotIn("background-image", hero.group(0))
 
+    # --- math and widgets ------------------------------------------------
+
+    def test_fixture_excluded(self):
+        self.assertFalse((self.out / "posts" / FIXTURE_SLUG).exists(),
+                         "draft fixture was published")
+        self.assertNotIn(FIXTURE_SLUG, read(self.out / "index.html"))
+
+    def test_no_extras_by_default(self):
+        for route in ["index.html", "posts/index.html", "about/index.html"]:
+            refs = " ".join(script_and_link_refs(read(self.out / route)))
+            for asset in EXTRA_ASSETS:
+                self.assertNotIn(asset, refs, f"{route} loads {asset}")
+
+    def test_vendored_pinned(self):
+        vendor = REPO / "static" / "vendor"
+        katex = [d for d in vendor.glob("katex-*") if d.is_dir()]
+        self.assertEqual(len(katex), 1, "expected one vendor/katex-<ver>/ dir")
+        self.assertRegex(katex[0].name, r"^katex-\d+\.\d+\.\d+$")
+        for name in ["katex.min.js", "katex.min.css"]:
+            self.assertTrue((katex[0] / name).is_file(), f"missing {name}")
+        self.assertTrue(any((katex[0] / "fonts").glob("*.woff2")),
+                        "missing KaTeX fonts")
+        plotly = list(vendor.glob("plotly-basic-*.min.js"))
+        self.assertEqual(len(plotly), 1, "expected one plotly-basic-<ver>.min.js")
+        self.assertRegex(plotly[0].name, r"^plotly-basic-\d+\.\d+\.\d+\.min\.js$")
+
 
 class FixtureSite(unittest.TestCase):
     """A temp copy of the site with two fixture posts added."""
@@ -303,6 +347,81 @@ class FixtureSite(unittest.TestCase):
         hero = re.search(r'<header class="hero"[^>]*>', newer)
         self.assertIsNotNone(hero, "newer post has no hero header")
         self.assertNotIn("background-image", hero.group(0))
+
+
+class DraftsSite(unittest.TestCase):
+    """The real repo built with --drafts, which includes the fixture post."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.out = Path(cls.tmp.name) / "public"
+        cls.result = build(REPO, cls.out, drafts=True)
+        page = cls.out / "posts" / FIXTURE_SLUG / "index.html"
+        cls.html = read(page) if page.is_file() else ""
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_drafts_build_succeeds(self):
+        self.assertEqual(self.result.returncode, 0, self.result.stderr)
+        self.assertTrue(self.html, "fixture page not built with --drafts")
+
+    def test_math_assets_loaded(self):
+        refs = script_and_link_refs(self.html)
+        self.assertTrue(any(re.search(r"katex[^/]*/katex\.min\.css$", r) for r in refs))
+        self.assertTrue(any(re.search(r"katex[^/]*/katex\.min\.js$", r) for r in refs))
+        self.assertTrue(any(r.endswith("/math.js") for r in refs))
+
+    def test_display_math_preserved(self):
+        blocks = re.findall(r'<pre[^>]*>\s*<code[^>]*data-lang="math"[^>]*>(.*?)</code>',
+                            self.html, flags=re.S)
+        self.assertTrue(blocks, "no math code block found")
+        text = text_of("".join(blocks))
+        for exact in [r"\right|_{U_{\text{res}}", r"\,", r"\\"]:
+            self.assertIn(exact, text, f"{exact!r} not preserved")
+
+    def test_inline_math_preserved(self):
+        self.assertIn(r"<code>$U_{\text{tot}}$</code>", self.html)
+
+    def test_plotly_before_widgets(self):
+        refs = script_and_link_refs(self.html)
+        plotly = [i for i, r in enumerate(refs) if "plotly" in r]
+        widgets = [i for i, r in enumerate(refs) if r.endswith("/widgets.js")]
+        self.assertTrue(plotly, "plotly not loaded")
+        self.assertTrue(widgets, "widgets.js not loaded")
+        self.assertLess(plotly[0], widgets[0])
+
+    def test_widget_markup(self):
+        self.assertRegex(
+            self.html,
+            r'<div class="widget" data-src="sine\.js" style="height:\s*\d+px;?"')
+        self.assertTrue((self.out / "posts" / FIXTURE_SLUG / "sine.js").is_file())
+
+    def test_widget_contract(self):
+        src = read(self.out / "posts" / FIXTURE_SLUG / "sine.js")
+        self.assertIn("export default function", src)
+
+
+class TeraBracesSite(unittest.TestCase):
+    """Zola 0.23 templates post content: a literal `{{` breaks the build."""
+
+    MATH = "\\frac{1}{{a+b}}"
+
+    def build_post(self, body):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            post = f'+++\ntitle = "braces"\ndate = 2026-01-01\n+++\n{body}\n'
+            site = make_fixture_site(root, {"braces.md": post})
+            return build(site, root / "public")
+
+    def test_tera_braces_in_math_need_raw(self):
+        bare = self.build_post(f"```math\n{self.MATH}\n```")
+        self.assertNotEqual(bare.returncode, 0,
+                            "`{{` in content should fail the build")
+        raw = self.build_post(f"{{% raw %}}\n```math\n{self.MATH}\n```\n{{% endraw %}}")
+        self.assertEqual(raw.returncode, 0, raw.stderr)
 
 
 class BadLanguageSite(unittest.TestCase):

@@ -9,7 +9,7 @@ widget support. All prose is jef's; templates and stubs only carry
       `static/as-you-like-it/`, plus a `.gitignore` for `public/`.
       *Done:* `git status` clean; only `static/as-you-like-it/` and
       `planning/` remain (plus `.gitignore`, `todo.md`, `backlog.md`).
-- [ ] **2. Minimal Zola site that builds**: `config.toml`, `base` / `index` /
+- [x] **2. Minimal Zola site that builds**: `config.toml`, `base` / `index` /
       `section` / `page` templates, content stubs for `/`, `/posts/`, `/about/`.
       *Done:* `zola build` succeeds; posts live at `/posts/<slug>/`; landing
       page lists posts; `public/as-you-like-it/index.html` is byte-identical

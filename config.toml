@@ -1,0 +1,5 @@
+base_url = "https://jefwagner.github.io"
+title = "Jef Wagner"
+compile_sass = false
+build_search_index = false
+generate_feeds = false

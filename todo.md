@@ -23,7 +23,7 @@ Items:
       with `math = true`, run all its math through the vendored KaTeX in
       `node` with `throwOnError`. Skips (with a message) if `node` is missing.
       *Done:* passes on the fixture; fails on a fixture post with bad LaTeX.
-- [ ] **3. Port `basics.md`** via the converter into
+- [x] **3. Port `basics.md`** via the converter into
       `content/posts/thermo/index.md` (page bundle), `math = true`, listed.
       *Done:* site builds; KaTeX check passes on it; a one-off check shows
       undoing the delimiter conversion reproduces the source byte-for-byte

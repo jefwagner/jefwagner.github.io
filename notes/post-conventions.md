@@ -31,8 +31,36 @@ KaTeX sees it (`|_{` became `<em>`, `\,` lost its backslash, `\\` became
 - display: a ```` ```math ```` fenced block
 - inline: inline code that starts and ends with `$`, e.g. `` `$U_{\text{tot}}$` ``
 
-Porting notes written with plain `$...$` / `$$...$$` (like the thermo notes)
-is a mechanical conversion. GitHub renders ```` ```math ```` fences natively.
+GitHub renders ```` ```math ```` fences natively.
+
+## Porting notes into a post
+
+Notes written with plain `$...$` / `$$...$$` convert mechanically:
+
+```text
+python3 scripts/notes_to_post.py NOTES.md content/posts/<slug>/index.md \
+    --date YYYY-MM-DD [--description "..."] [--draft] [--no-math]
+```
+
+- Rewrites only math delimiters and moves the leading `# Title` into the
+  front matter; the prose is copied unchanged. Display math must sit on its
+  own `$$` lines.
+- Refuses (naming the source line) rather than guessing: `{{`/`{%`, unclosed
+  `$` or `$$`, `$$` inside a paragraph, backticks inside inline math.
+- Won't overwrite an existing post without `--force`.
+- After porting, the post is the source of truth; edit it, not the notes.
+
+## Checks
+
+```text
+python3 tests/check_site.py                                    # site build checks
+uv run --no-project --python 3.12 tests/test_notes_to_post.py  # converter (needs 3.11+)
+```
+
+The site checks include a KaTeX render check: every math expression on
+every page that loads KaTeX is rendered with `throwOnError`, so bad LaTeX
+fails the tests instead of showing a red error on the live page. It needs
+`node` (found on `PATH` or under `~/.nvm`) and is skipped without it.
 
 ## Zola 0.23 gotchas
 

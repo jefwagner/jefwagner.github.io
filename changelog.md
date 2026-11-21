@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-21 (second chunk): first post
+
+Published jef's thermo notes as the first post, `/posts/thermo/`
+("Basics of thermodynamics"), with the prose unchanged.
+
+- `scripts/notes_to_post.py` converts a notes file into a post: rewrites
+  only math delimiters and moves the H1 into the title, and refuses Tera
+  syntax or ambiguous math instead of guessing. Reusable for future notes.
+- KaTeX render check (`tests/katex_check.js`, run by the site tests when
+  `node` is available): every math expression on every built math page is
+  rendered with `throwOnError`, since Zola never validates LaTeX.
+- The post is now the source of truth for the article; the copy in
+  `~/lab/thermo/notes/` is no longer the one to edit.
+
 ## 2026-11-21
 
 Rebuilt jefwagner.github.io from scratch as a Zola blog skeleton, on branch

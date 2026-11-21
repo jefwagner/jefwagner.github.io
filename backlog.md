@@ -1,8 +1,16 @@
 # Backlog
 
+- **First:** `AGENTS.md` for this repo before or with moving it out of
+  `~/lab/thermo/` (it is currently governed by thermo's AGENTS.md as a parent
+  directory, and agent memories are keyed to the thermo path).
 - GitHub Actions deploy workflow (pinned Zola v0.23.6); switch Pages source
   to "GitHub Actions" only when merging to `main`.
-- Port the thermo notes as the first post.
+  With it: one command that runs both test suites under uv Python 3.12, and
+  Node in CI so the KaTeX render check runs instead of being skipped.
+- Thermo post leftovers (optional review points from
+  `~/lab/thermo/notes/basics-comments.md`, now applying to
+  `content/posts/thermo/index.md`): drop "(up to a sign)" in the Legendre
+  section; name $1/T$ in the reservoir result. jef's prose to write.
 - Scrollytelling page template (sticky graphic panel + steps).
 - Hero-image generation script via OpenRouter image models (possibly its own
   lab experiment).

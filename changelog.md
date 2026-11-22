@@ -1,5 +1,31 @@
 # Changelog
 
+## 2026-11-21 (third chunk): post workflow and go-live
+
+The new site is live, deployed by GitHub Actions from `main`, and adding a
+post now has a documented, tested path: its own branch, local preview
+(also over SSH), PR with CI, merge = deploy.
+
+- `scripts/check` runs every test suite; the `site` workflow runs it on
+  every push and PR with pinned Zola v0.23.6 (sha256-verified) and Node,
+  and `REQUIRE_NODE=1` makes CI fail rather than skip the KaTeX render
+  check. Deploy is a separate job, gated on the checks, from `main` only,
+  and never builds drafts.
+- `scripts/new_post.py <slug>` creates `post/<slug>` from a freshly
+  fetched `origin/main` with a draft page bundle (placeholders only),
+  refusing on a dirty tree or a slug/branch already in use.
+- `notes/post-workflow.md` is the procedure, refined by a full dry run
+  with a throwaway post (PR #2, closed unmerged). Learned: Zola 0.23
+  serves live-reload on the serve port, so one `ssh -L` forward is
+  enough, but both ends must use the same port number; and nothing yet
+  catches a `TODO` title in an un-drafted post (backlog).
+- Go-live (PR #1): Pages source switched to GitHub Actions *before*
+  merging, so the legacy builder never ran Jekyll over the Zola sources.
+  `/flint/` is 404 until the flint docs handoff (backlog); `/resume/` and
+  the other old pages are gone on purpose.
+- Gotchas: `astral-sh/setup-uv` publishes no moving major tag (pinned
+  `v10.4.0`); the local `gh` is 2.4 (no `gh run list --branch`).
+
 ## 2026-11-21 (second chunk): first post
 
 Published jef's thermo notes as the first post, `/posts/thermo/`

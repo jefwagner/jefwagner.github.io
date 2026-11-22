@@ -19,10 +19,12 @@ agent's job with prose is review and mechanical fixes only (see Writing rule
 below). Agents build the infrastructure: templates, CSS, JS, scripts, tests,
 CI.
 
-**Status:** skeleton and first post (`/posts/thermo/`) done and committed on
-branch `jef/new-blog-testing`; not pushed, not deployed (`main` still serves the
-old site). Landing and about pages are `TODO: jef writes this` placeholders.
-Next: the GitHub Actions deploy (top of `backlog.md`, after this file).
+**Status:** live since 2026-11-21. `main` is the site: GitHub Actions
+(`.github/workflows/site.yml`) checks every push and PR, and deploys on push to
+`main`. First post `/posts/thermo/` is published. Landing and about pages are
+still `TODO: jef writes this` placeholders. `/flint/` is 404 until the flint
+docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
+`notes/post-workflow.md`.
 
 ## Writing rule (prose is jef's)
 
@@ -56,10 +58,18 @@ Next: the GitHub Actions deploy (top of `backlog.md`, after this file).
   pass `error_on_missing_language`.
 - `scripts/notes_to_post.py` — converts a markdown notes file into a post
   (math delimiters and title only; prose unchanged).
+- `scripts/new_post.py` — starts a post: branch `post/<slug>` from
+  `origin/main` plus a draft page bundle with placeholders only.
+- `scripts/check` — runs every test suite (what CI runs).
 - `tests/` — `check_site.py` (site build checks), `test_notes_to_post.py`,
-  `katex_check.js`.
+  `test_new_post.py`, `katex_check.js`.
+- `.github/workflows/site.yml` — CI checks on every push/PR; build (no
+  drafts) and Pages deploy on push to `main`. Zola version + sha256 pinned
+  here (a test keeps it equal to the local Zola).
 - `notes/post-conventions.md` — **read before writing or porting a post**:
   front-matter switches, math-as-code, Zola 0.23 gotchas, widget contract.
+- `notes/post-workflow.md` — the procedure for shipping a post: branch,
+  preview (incl. over SSH), checks, PR, merge = deploy, undo.
 - `planning/` — handoff docs for work done in other repos (flint docs).
 - `todo.md`, `backlog.md`, `changelog.md` — tdd-mode planning and history.
 
@@ -70,12 +80,13 @@ Free to run without asking (read-only checks):
 ```text
 zola build --output-dir <tmpdir>                                 # build (never into the repo)
 zola serve [--drafts]                                            # local preview
-python3 tests/check_site.py                                      # site checks (Python 3.10+)
-uv run --no-project --python 3.12 tests/test_notes_to_post.py    # converter (needs 3.11+)
+scripts/check                                                    # all suites, as CI runs them
+python3 tests/check_site.py                                      # site checks only (Python 3.10+)
 ```
 
 The site checks include a KaTeX render check that needs `node` (found on `PATH`
-or under `~/.nvm`) and is skipped without it. `public/` is build output and is
+or under `~/.nvm`) and is skipped without it; `REQUIRE_NODE=1` (set in CI)
+makes a missing node a failure instead. `public/` is build output and is
 gitignored.
 
 ## Constraints
@@ -181,8 +192,10 @@ independently (e.g. overnight or long-running jobs).
 ## Git
 
 - Remote is jef's own **public** repo, `github.com/jefwagner/jefwagner.github.io`.
-  The live site deploys from `main`; never push or merge to `main` unless jef
-  asks in that same turn.
+  Every push to `main` deploys the live site, so changes reach `main` only
+  through a PR from a branch (posts: `post/<slug>`; see
+  `notes/post-workflow.md`). Never push or merge to `main` unless jef asks in
+  that same turn.
 - Commit identity in the devcontainer is the bot account. Commit style: short
   summary line + longer body.
 

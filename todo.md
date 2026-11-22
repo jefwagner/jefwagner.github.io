@@ -26,7 +26,7 @@ branch, previewing it locally (and over SSH), and shipping it through a PR to
   0.23 live-reload needs a second forwarded port), checks, un-drafting,
   push, PR, merge, deploy, verifying live, branch cleanup, and reverting a
   published post.
-- [ ] **Go live + dry run.** PR `jef/new-blog-testing` → `main` following the
+- [x] **Go live + dry run.** PR `jef/new-blog-testing` → `main` following the
   doc; CI green; jef merges and switches the Pages source to "GitHub
   Actions"; verify live `/`, `/posts/thermo/`, `/as-you-like-it/`, `/flint/`.
   Then dry-run the post flow with a throwaway post: scaffold → serve (local

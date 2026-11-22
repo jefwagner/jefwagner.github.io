@@ -25,13 +25,17 @@
   {#- Hero images, as a day/night pair chosen together: a page that sets
       [extra] hero_image uses its own hero_image_light (none => solid colour
       in light mode); otherwise the site's pair applies. style.css picks one
-      per colour scheme via --hero-img / --hero-img-light. -#}
+      per colour scheme via --hero-img / --hero-img-light. hero_credit (the
+      footer's image credit) travels with its pair the same way. -#}
   {%- set hero_image = config.extra.hero_image | default(value="") %}
   {%- set hero_image_light = config.extra.hero_image_light | default(value="") %}
+  {%- set hero_credit = config.extra.hero_credit | default(value="") %}
   {%- if page and page.extra.hero_image %}
     {%- set hero_image = page.extra.hero_image %}
     {%- set hero_image_light = page.extra.hero_image_light | default(value="") %}
+    {%- set hero_credit = page.extra.hero_credit | default(value="") %}
   {%- endif %}
+  {%- if not hero_image and not hero_image_light %}{% set hero_credit = "" %}{% endif %}
   {% block hero %}
   <header class="hero"
     {%- if hero_image or hero_image_light %} style="
@@ -53,6 +57,7 @@
   {% block footer %}
   <footer class="site-footer">
     <a href="{{ get_url(path="@/ai-policy.md") }}">AI policy</a>
+    {%- if hero_credit %} · <span class="hero-credit">{{ hero_credit | markdown(inline=true) | safe }}</span>{% endif %}
   </footer>
   {% endblock footer %}
 </body>

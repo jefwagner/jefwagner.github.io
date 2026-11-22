@@ -31,7 +31,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 
 import hero  # noqa: E402
-from hero_gen import contrast, crop, export, openrouter, prompts, site  # noqa: E402
+from hero_gen import contrast, crop, export, openrouter, preview, prompts, site  # noqa: E402
 
 
 def tmpdir(test):
@@ -247,6 +247,18 @@ class SitePort(unittest.TestCase):
     def test_from_post_reads_repo_posts(self):
         text = prompts.from_post("thermo").text()
         self.assertIn("Basics of thermodynamics", text)
+
+    def test_configured_pair_passes_contrast(self):
+        import tomllib
+        extra = tomllib.loads((REPO / "config.toml").read_text(encoding="utf-8"))["extra"]
+        for key, mode in [("hero_image", "dark"), ("hero_image_light", "light")]:
+            with self.subTest(key=key):
+                self.assertTrue(extra.get(key), f"{key} not set in config.toml")
+                path = REPO / "static" / extra[key]
+                self.assertLess(path.stat().st_size, 150 * 1024, f"{path.name} too large")
+                _, stats = preview.sheet(Image.open(path), modes=(mode,), scale=0.25)
+                self.assertTrue(all(s["ok"] for s in stats.values()),
+                                f"{path.name} fails {mode}: {preview.worst(stats)}")
 
     def test_hero_work_gitignored(self):
         r = subprocess.run(["git", "check-ignore", "-q", "hero-work/x.png"], cwd=REPO)

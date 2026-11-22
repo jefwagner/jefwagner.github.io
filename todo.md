@@ -24,7 +24,7 @@ site, shipping the moonbase day/night banner.
   `uv run`, so the site tests stay stdlib-only. Its tests join
   `scripts/check` (no network, no spend). Key read from the env, never
   logged. Commit `planning/hero-image-handoff.md` as history.
-- [ ] **Ship the moonbase banner.** Moonbase night/day pair from
+- [x] **Ship the moonbase banner.** Moonbase night/day pair from
   `or-img-gen/out/export/` into `static/img/`, set as the site-wide hero;
   an image credit in the footer per jef's AI policy (wording is jef's:
   placeholder until written). Verify both modes at phone and desktop widths

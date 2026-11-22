@@ -24,5 +24,9 @@ hero_title = "Jef with one *f*"
 # (the default scheme), hero_image_light for light mode. Empty means a solid
 # color block. A page overrides the pair with [extra] hero_image (and its own
 # optional hero_image_light) in front matter; it never inherits the site's
-# light image.
-hero_image = ""
+# light image. hero_credit is the image credit shown in the footer while that
+# pair is in use (inline markdown); a page with its own pair sets its own.
+# Banners are made with scripts/hero.py (notes/hero-images.md).
+hero_image = "img/hero-moonbase-night.webp"
+hero_image_light = "img/hero-moonbase-day.webp"
+hero_credit = "Top hero image generated with Nano Banana 2"

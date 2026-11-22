@@ -7,4 +7,6 @@ display my various side-projects and musings. There is no specific theme, but th
 covered will almost always be somewhat nerdy in scope and frequently be somewhat math
 heavy.
 
-TODO: jef writes this
+All post and project descriptions here will be human-written by me. However, I do use AI
+throughout my projects and in the creation of this website. Please see the AI policy
+link for a more detailed personal AI policy.

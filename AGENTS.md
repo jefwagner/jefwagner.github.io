@@ -23,8 +23,8 @@ CI.
 (`.github/workflows/site.yml`) checks every push and PR, and deploys on push to
 `main`. First post `/posts/thermo/` is published. Landing and about text are
 jef's; his AI policy is its own page, `/ai-policy/`, linked from the site
-footer (the landing's pointer line to it is still a `TODO` for jef). New posts
-follow `notes/post-workflow.md`.
+footer. The hero is the moonbase day/night banner, credited in the footer
+(`hero_credit`). New posts follow `notes/post-workflow.md`.
 
 ## Writing rule (prose is jef's)
 
@@ -44,7 +44,8 @@ follow `notes/post-workflow.md`.
 ## System layout
 
 - `config.toml` — Zola config: highlighting (ayu-dark / github-light code
-  themes), `extra_grammars` (the `math` fence), `[extra] hero_image`.
+  themes), `extra_grammars` (the `math` fence), `[extra]` hero settings
+  (`hero_title`, the `hero_image`/`hero_image_light` pair, `hero_credit`).
 - `content/` — `_index.md` (landing), `about.md`, `ai-policy.md`, `posts/`
   (one file or page bundle per post; `posts/fixture-math-widgets/` is a
   **draft** test fixture, never published).

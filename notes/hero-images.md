@@ -53,7 +53,13 @@ uv run scripts/hero.py spend
 ## Attribution
 
 Hero images are AI-generated, which jef's AI policy (`/ai-policy/`) lists as
-acceptable with attribution, so a banner on the site needs a credit.
+acceptable with attribution, so a banner on the site needs a credit:
+`hero_credit` in `config.toml` for the site pair, or in a post's front
+matter next to its own pair. The footer shows it while that pair is in use
+(inline markdown, so it can link to the policy). The wording is jef's.
+
+The site banner is the moonbase pair (`static/img/hero-moonbase-*.webp`),
+exported from the lab's raw Nano Banana generations.
 
 ## Open
 

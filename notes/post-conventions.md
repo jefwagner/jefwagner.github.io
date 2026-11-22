@@ -22,11 +22,13 @@ reasons behind each rule. Update when a convention changes.
 | `widgets = true` | loads `static/widgets.js` only (non-Plotly widgets) |
 | `hero_image = "img/x.webp"` | banner image for this post, dark mode (path under `static/`) |
 | `hero_image_light = "img/y.webp"` | light-mode banner; only used with this post's own `hero_image` |
+| `hero_credit = "..."` | footer image credit for this post's own pair (inline markdown) |
 
 Hero images come as a day/night pair: no single image keeps the hero text
 readable in both colour schemes. A post that sets `hero_image` without
 `hero_image_light` gets a solid colour in light mode, never the site's
-light image.
+light image; likewise it shows its own `hero_credit` or none, never the
+site's.
 
 ## Math: write it as code
 

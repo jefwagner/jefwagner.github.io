@@ -32,11 +32,16 @@
       <a href="{{ get_url(path="@/posts/_index.md") }}">Posts</a>
       <a href="{{ get_url(path="@/about.md") }}">About</a>
     </nav>
-    <p class="site-title">{{ config.title }}</p>
+    <p class="site-title">{{ config.extra.hero_title | default(value=config.title) | markdown(inline=true) | safe }}</p>
   </header>
   {% endblock hero %}
   <main>
     {% block content %}{% endblock content %}
   </main>
+  {% block footer %}
+  <footer class="site-footer">
+    <a href="{{ get_url(path="@/ai-policy.md") }}">AI policy</a>
+  </footer>
+  {% endblock footer %}
 </body>
 </html>

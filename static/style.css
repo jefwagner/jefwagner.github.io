@@ -168,6 +168,21 @@ pre {
   font-size: 0.9rem;
 }
 
+/* --- footer ----------------------------------------------------------- */
+
+/* Same column as main; main's bottom padding provides the gap above. */
+.site-footer {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.25rem 16px 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 0.9rem;
+}
+
+.site-footer a { color: var(--fg-muted); }
+.site-footer a:hover { color: var(--link); }
+
 /* Required by Zola's Giallo highlighter (see Zola syntax-highlighting docs). */
 .giallo-l {
   display: inline-block;

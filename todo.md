@@ -4,7 +4,7 @@ Session goal: publish jef's landing and about text with the AI policy on its
 own page, and bring hero-image generation from `~/lab/or-img-gen` into the
 site, shipping the moonbase day/night banner.
 
-- [ ] **Landing/about content + AI policy page + footer.** Commit jef's
+- [x] **Landing/about content + AI policy page + footer.** Commit jef's
   edited `_index.md`/`about.md` with the mechanical typo/grammar fixes. Move
   the AI policy verbatim to `content/ai-policy.md` (`/ai-policy/`); the
   landing keeps the intro and gets a `TODO: jef writes this` pointer line.

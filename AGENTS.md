@@ -21,10 +21,10 @@ CI.
 
 **Status:** live since 2026-11-21. `main` is the site: GitHub Actions
 (`.github/workflows/site.yml`) checks every push and PR, and deploys on push to
-`main`. First post `/posts/thermo/` is published. Landing and about pages are
-still `TODO: jef writes this` placeholders. `/flint/` is 404 until the flint
-docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
-`notes/post-workflow.md`.
+`main`. First post `/posts/thermo/` is published. Landing and about text are
+jef's; his AI policy is its own page, `/ai-policy/`, linked from the site
+footer (the landing's pointer line to it is still a `TODO` for jef). New posts
+follow `notes/post-workflow.md`.
 
 ## Writing rule (prose is jef's)
 
@@ -45,9 +45,9 @@ docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
 
 - `config.toml` — Zola config: highlighting (ayu-dark / github-light code
   themes), `extra_grammars` (the `math` fence), `[extra] hero_image`.
-- `content/` — `_index.md` (landing), `about.md`, `posts/` (one file or page
-  bundle per post; `posts/fixture-math-widgets/` is a **draft** test fixture,
-  never published).
+- `content/` — `_index.md` (landing), `about.md`, `ai-policy.md`, `posts/`
+  (one file or page bundle per post; `posts/fixture-math-widgets/` is a
+  **draft** test fixture, never published).
 - `templates/` — `base.html` (skeleton, hero, per-page asset loading),
   `index.html`, `section.html`, `page.html`, `post_list.html`,
   `components.html` (Tera components, e.g. `widget`).

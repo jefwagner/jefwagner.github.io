@@ -257,7 +257,8 @@ class RealSite(unittest.TestCase):
         self.assertEqual(self.result.returncode, 0, self.result.stderr)
 
     def test_routes_exist(self):
-        for route in ["index.html", "posts/index.html", "about/index.html"]:
+        for route in ["index.html", "posts/index.html", "about/index.html",
+                      "ai-policy/index.html"]:
             self.assertTrue((self.out / route).is_file(), f"missing {route}")
 
     def test_as_you_like_it_identical(self):
@@ -271,9 +272,39 @@ class RealSite(unittest.TestCase):
             self.assertTrue(built.is_file(), f"missing {rel}")
             self.assertEqual(sha256(f), sha256(built), f"{rel} differs")
 
-    def test_placeholders_only(self):
-        for route in ["index.html", "about/index.html"]:
-            self.assertIn(PLACEHOLDER, read(self.out / route), route)
+    def test_footer_links_policy(self):
+        pages = [p for p in self.out.rglob("*.html")
+                 if p.relative_to(self.out).parts[0] != "as-you-like-it"
+                 and p.name != "404.html"]
+        self.assertTrue(pages)
+        for page in pages:
+            rel = page.relative_to(self.out).as_posix()
+            footer = re.search(r'<footer class="site-footer">(.*?)</footer>',
+                               read(page), re.S)
+            self.assertIsNotNone(footer, f"{rel} has no site footer")
+            link = re.search(r'href="([^"]*/ai-policy/)"', footer.group(1))
+            self.assertIsNotNone(link, f"{rel} footer has no /ai-policy/ link")
+            self.assertTrue((self.out / "ai-policy" / "index.html").is_file())
+
+    def test_hero_title_italic_f(self):
+        for route in ["index.html", "about/index.html", "posts/thermo/index.html"]:
+            html = read(self.out / route)
+            self.assertRegex(html, r'<p class="site-title">\s*Jef with one <em>f</em>\s*</p>',
+                             route)
+        self.assertIn("<title>Jef Wagner</title>", read(self.out / "index.html"))
+
+    def test_policy_moved_not_copied(self):
+        policy = read(self.out / "ai-policy" / "index.html")
+        self.assertIn("<h1>Personal AI policy</h1>", policy)
+        self.assertIn("Acceptable with attribution", policy)
+        self.assertNotIn("Acceptable with attribution",
+                         read(self.out / "index.html"))
+
+    def test_policy_not_listed_as_post(self):
+        main = re.search(r"<main.*?</main>", read(self.out / "posts" / "index.html"),
+                         re.S)
+        self.assertIsNotNone(main)
+        self.assertNotIn("/ai-policy/", main.group(0))  # the footer links it; the list mustn't
 
     # --- theme ---------------------------------------------------------
 

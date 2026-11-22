@@ -17,6 +17,9 @@ dark_theme = "ayu-dark"
 extra_grammars = ["grammars/math.json"]
 
 [extra]
+# Hero banner title on every page; inline markdown (*f* renders italic).
+# Falls back to `title` above. Browser tab titles keep using `title`.
+hero_title = "Jef with one *f*"
 # Site-wide hero banner image, as a path under static/. Empty means a solid
 # color block. A page can override it with [extra] hero_image in front matter.
 hero_image = ""

@@ -20,7 +20,15 @@ reasons behind each rule. Update when a convention changes.
 | `math = true` | loads KaTeX + `static/math.js` |
 | `plotly = true` | loads Plotly basic and `static/widgets.js` |
 | `widgets = true` | loads `static/widgets.js` only (non-Plotly widgets) |
-| `hero_image = "img/x.png"` | banner image for this post (path under `static/`) |
+| `hero_image = "img/x.webp"` | banner image for this post, dark mode (path under `static/`) |
+| `hero_image_light = "img/y.webp"` | light-mode banner; only used with this post's own `hero_image` |
+| `hero_credit = "..."` | footer image credit for this post's own pair (inline markdown) |
+
+Hero images come as a day/night pair: no single image keeps the hero text
+readable in both colour schemes. A post that sets `hero_image` without
+`hero_image_light` gets a solid colour in light mode, never the site's
+light image; likewise it shows its own `hero_credit` or none, never the
+site's.
 
 ## Math: write it as code
 
@@ -71,6 +79,11 @@ fails the tests instead of showing a red error on the live page. It needs
   (`skip_content_templating` in config can turn this off per file.)
 - **No shortcodes.** They were removed in 0.23; use Tera components
   (`templates/components.html`).
+- **Templates (Tera 2):** some Tera 1 filters are gone (e.g. `concat`; the
+  build fails with "Unknown filter"), and a string built with `~` in a
+  `{% set %}` is autoescaped on output, so quotes become `&#39;`. Write
+  literal markup (quotes, `url('...')`) as template text and interpolate
+  only the values, as the hero `style` attribute in `base.html` does.
 
 ## Widgets
 

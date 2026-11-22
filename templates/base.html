@@ -22,21 +22,43 @@
   {% block head %}{% endblock head %}
 </head>
 <body>
-  {#- Hero image: the page's [extra] hero_image, else the site's, else none. -#}
+  {#- Hero images, as a day/night pair chosen together: a page that sets
+      [extra] hero_image uses its own hero_image_light (none => solid colour
+      in light mode); otherwise the site's pair applies. style.css picks one
+      per colour scheme via --hero-img / --hero-img-light. hero_credit (the
+      footer's image credit) travels with its pair the same way. -#}
   {%- set hero_image = config.extra.hero_image | default(value="") %}
-  {%- if page and page.extra.hero_image %}{% set hero_image = page.extra.hero_image %}{% endif %}
+  {%- set hero_image_light = config.extra.hero_image_light | default(value="") %}
+  {%- set hero_credit = config.extra.hero_credit | default(value="") %}
+  {%- if page and page.extra.hero_image %}
+    {%- set hero_image = page.extra.hero_image %}
+    {%- set hero_image_light = page.extra.hero_image_light | default(value="") %}
+    {%- set hero_credit = page.extra.hero_credit | default(value="") %}
+  {%- endif %}
+  {%- if not hero_image and not hero_image_light %}{% set hero_credit = "" %}{% endif %}
   {% block hero %}
-  <header class="hero"{% if hero_image %} style="background-image: url('{{ get_url(path=hero_image) }}')"{% endif %}>
+  <header class="hero"
+    {%- if hero_image or hero_image_light %} style="
+      {%- if hero_image %}--hero-img: url('{{ get_url(path=hero_image) }}');{% endif %}
+      {%- if hero_image and hero_image_light %} {% endif %}
+      {%- if hero_image_light %}--hero-img-light: url('{{ get_url(path=hero_image_light) }}');{% endif -%}
+    "{% endif %}>
     <nav class="site-nav">
       <a href="{{ get_url(path="@/_index.md") }}">Home</a>
       <a href="{{ get_url(path="@/posts/_index.md") }}">Posts</a>
       <a href="{{ get_url(path="@/about.md") }}">About</a>
     </nav>
-    <p class="site-title">{{ config.title }}</p>
+    <p class="site-title">{{ config.extra.hero_title | default(value=config.title) | markdown(inline=true) | safe }}</p>
   </header>
   {% endblock hero %}
   <main>
     {% block content %}{% endblock content %}
   </main>
+  {% block footer %}
+  <footer class="site-footer">
+    <a href="{{ get_url(path="@/ai-policy.md") }}">AI policy</a>
+    {%- if hero_credit %} · <span class="hero-credit">{{ hero_credit | markdown(inline=true) | safe }}</span>{% endif %}
+  </footer>
+  {% endblock footer %}
 </body>
 </html>

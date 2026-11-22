@@ -21,10 +21,10 @@ CI.
 
 **Status:** live since 2026-11-21. `main` is the site: GitHub Actions
 (`.github/workflows/site.yml`) checks every push and PR, and deploys on push to
-`main`. First post `/posts/thermo/` is published. Landing and about pages are
-still `TODO: jef writes this` placeholders. `/flint/` is 404 until the flint
-docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
-`notes/post-workflow.md`.
+`main`. First post `/posts/thermo/` is published. Landing and about text are
+jef's; his AI policy is its own page, `/ai-policy/`, linked from the site
+footer. The hero is the moonbase day/night banner, credited in the footer
+(`hero_credit`). New posts follow `notes/post-workflow.md`.
 
 ## Writing rule (prose is jef's)
 
@@ -44,10 +44,11 @@ docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
 ## System layout
 
 - `config.toml` — Zola config: highlighting (ayu-dark / github-light code
-  themes), `extra_grammars` (the `math` fence), `[extra] hero_image`.
-- `content/` — `_index.md` (landing), `about.md`, `posts/` (one file or page
-  bundle per post; `posts/fixture-math-widgets/` is a **draft** test fixture,
-  never published).
+  themes), `extra_grammars` (the `math` fence), `[extra]` hero settings
+  (`hero_title`, the `hero_image`/`hero_image_light` pair, `hero_credit`).
+- `content/` — `_index.md` (landing), `about.md`, `ai-policy.md`, `posts/`
+  (one file or page bundle per post; `posts/fixture-math-widgets/` is a
+  **draft** test fixture, never published).
 - `templates/` — `base.html` (skeleton, hero, per-page asset loading),
   `index.html`, `section.html`, `page.html`, `post_list.html`,
   `components.html` (Tera components, e.g. `widget`).
@@ -60,9 +61,14 @@ docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
   (math delimiters and title only; prose unchanged).
 - `scripts/new_post.py` — starts a post: branch `post/<slug>` from
   `origin/main` plus a draft page bundle with placeholders only.
+- `scripts/hero.py` + `scripts/hero_gen/` — hero banners via OpenRouter image
+  models (generate, day/night twin, contrast check, export to `static/img/`);
+  deps declared inline for `uv run`. Costs money: see `notes/hero-images.md`.
+  Writes scratch output to `hero-work/` (gitignored).
 - `scripts/check` — runs every test suite (what CI runs).
 - `tests/` — `check_site.py` (site build checks), `test_notes_to_post.py`,
-  `test_new_post.py`, `katex_check.js`.
+  `test_new_post.py`, `test_hero_gen.py` (no network, no spend),
+  `katex_check.js`.
 - `.github/workflows/site.yml` — CI checks on every push/PR; build (no
   drafts) and Pages deploy on push to `main`. Zola version + sha256 pinned
   here (a test keeps it equal to the local Zola).
@@ -70,7 +76,10 @@ docs handoff is done (`planning/flint-docs-handoff.md`). New posts follow
   front-matter switches, math-as-code, Zola 0.23 gotchas, widget contract.
 - `notes/post-workflow.md` — the procedure for shipping a post: branch,
   preview (incl. over SSH), checks, PR, merge = deploy, undo.
-- `planning/` — handoff docs for work done in other repos (flint docs).
+- `notes/hero-images.md` — making hero banners: day/night pairs, shape,
+  the `hero.py` workflow, cost and key handling.
+- `planning/` — handoff docs for work done in other repos (flint docs, the
+  hero-image lab experiment).
 - `todo.md`, `backlog.md`, `changelog.md` — tdd-mode planning and history.
 
 ## Build and test

@@ -240,6 +240,48 @@ def make_fixture_site(root, posts):
     return site
 
 
+def hero_tag(html):
+    """The opening <header class="hero" ...> tag, or None."""
+    m = re.search(r'<header class="hero"[^>]*>', html)
+    return m.group(0) if m else None
+
+
+def hero_vars(html):
+    """{'--hero-img': url, '--hero-img-light': url} from the hero tag's style."""
+    tag = hero_tag(html) or ""
+    return dict(re.findall(r"(--hero-img(?:-light)?):\s*url\('([^']*)'\)", tag))
+
+
+def hero_credit(html):
+    """Text inside the footer's hero-credit span, or None."""
+    footer = re.search(r'<footer class="site-footer">(.*?)</footer>', html, re.S)
+    if not footer:
+        return None
+    m = re.search(r'<span class="hero-credit">(.*?)</span>', footer.group(1), re.S)
+    return m.group(1) if m else None
+
+
+HERO_KEYS = ("hero_image", "hero_image_light", "hero_credit")
+
+
+def set_hero_config(site, **values):
+    """Rewrite the hero_* lines of site/config.toml; a key without a line is
+    added after hero_image. Values are TOML strings (empty means unset)."""
+    config = site / "config.toml"
+    text = read(config)
+    if not re.search(r"^hero_image = .*$", text, re.M):
+        raise RuntimeError("config.toml has no hero_image line")
+    for key in HERO_KEYS:
+        value = values.get(key, "")
+        line = f'{key} = "{value}"'
+        if re.search(rf"^{key} = .*$", text, re.M):
+            text = re.sub(rf"^{key} = .*$", lambda _: line, text, flags=re.M)
+        else:
+            text = re.sub(r"^(hero_image = .*)$", lambda m: m.group(1) + "\n" + line,
+                          text, count=1, flags=re.M)
+    config.write_text(text, encoding="utf-8")
+
+
 class RealSite(unittest.TestCase):
     """The site exactly as committed (no posts yet)."""
 
@@ -257,7 +299,8 @@ class RealSite(unittest.TestCase):
         self.assertEqual(self.result.returncode, 0, self.result.stderr)
 
     def test_routes_exist(self):
-        for route in ["index.html", "posts/index.html", "about/index.html"]:
+        for route in ["index.html", "posts/index.html", "about/index.html",
+                      "ai-policy/index.html"]:
             self.assertTrue((self.out / route).is_file(), f"missing {route}")
 
     def test_as_you_like_it_identical(self):
@@ -271,9 +314,39 @@ class RealSite(unittest.TestCase):
             self.assertTrue(built.is_file(), f"missing {rel}")
             self.assertEqual(sha256(f), sha256(built), f"{rel} differs")
 
-    def test_placeholders_only(self):
-        for route in ["index.html", "about/index.html"]:
-            self.assertIn(PLACEHOLDER, read(self.out / route), route)
+    def test_footer_links_policy(self):
+        pages = [p for p in self.out.rglob("*.html")
+                 if p.relative_to(self.out).parts[0] != "as-you-like-it"
+                 and p.name != "404.html"]
+        self.assertTrue(pages)
+        for page in pages:
+            rel = page.relative_to(self.out).as_posix()
+            footer = re.search(r'<footer class="site-footer">(.*?)</footer>',
+                               read(page), re.S)
+            self.assertIsNotNone(footer, f"{rel} has no site footer")
+            link = re.search(r'href="([^"]*/ai-policy/)"', footer.group(1))
+            self.assertIsNotNone(link, f"{rel} footer has no /ai-policy/ link")
+            self.assertTrue((self.out / "ai-policy" / "index.html").is_file())
+
+    def test_hero_title_italic_f(self):
+        for route in ["index.html", "about/index.html", "posts/thermo/index.html"]:
+            html = read(self.out / route)
+            self.assertRegex(html, r'<p class="site-title">\s*Jef with one <em>f</em>\s*</p>',
+                             route)
+        self.assertIn("<title>Jef Wagner</title>", read(self.out / "index.html"))
+
+    def test_policy_moved_not_copied(self):
+        policy = read(self.out / "ai-policy" / "index.html")
+        self.assertIn("<h1>Personal AI policy</h1>", policy)
+        self.assertIn("Acceptable with attribution", policy)
+        self.assertNotIn("Acceptable with attribution",
+                         read(self.out / "index.html"))
+
+    def test_policy_not_listed_as_post(self):
+        main = re.search(r"<main.*?</main>", read(self.out / "posts" / "index.html"),
+                         re.S)
+        self.assertIsNotNone(main)
+        self.assertNotIn("/ai-policy/", main.group(0))  # the footer links it; the list mustn't
 
     # --- theme ---------------------------------------------------------
 
@@ -312,11 +385,28 @@ class RealSite(unittest.TestCase):
             self.assertNotIn("@font-face", text)
             self.assertNotRegex(text, r"fonts\.(googleapis|gstatic)\.com")
 
-    def test_hero_default_solid(self):
-        html = read(self.out / "index.html")
-        hero = re.search(r'<header class="hero"[^>]*>', html)
-        self.assertIsNotNone(hero, "landing has no hero header")
-        self.assertNotIn("background-image", hero.group(0))
+    def test_site_hero_pair_configured(self):
+        v = hero_vars(read(self.out / "index.html"))
+        self.assertTrue(v.get("--hero-img", "").endswith("/img/hero-moonbase-night.webp"))
+        self.assertTrue(v.get("--hero-img-light", "").endswith("/img/hero-moonbase-day.webp"))
+        for name in ["hero-moonbase-night.webp", "hero-moonbase-day.webp"]:
+            self.assertTrue((REPO / "static" / "img" / name).is_file(), name)
+            self.assertTrue((self.out / "img" / name).is_file(), name)
+
+    def test_footer_hero_credit(self):
+        self.assertIsNotNone(hero_credit(read(self.out / "index.html")),
+                             "landing footer has no hero credit")
+
+    def test_hero_css_modes(self):
+        css = self.css()
+        light = re.search(r"@media\s*\(\s*prefers-color-scheme\s*:\s*light\s*\)\s*\{"
+                          r"\s*\.hero\s*\{(?P<body>[^}]*)\}\s*\}", css)
+        self.assertIsNotNone(light, "no light-mode .hero rule")
+        self.assertRegex(light["body"],
+                         r"background-image:\s*var\(--hero-img-light,\s*none\)")
+        outside = css.replace(light.group(0), "")
+        self.assertRegex(outside, r"\.hero\s*\{[^}]*background-image:\s*"
+                                  r"var\(--hero-img,\s*none\)")
 
     # --- math and widgets ------------------------------------------------
 
@@ -403,14 +493,145 @@ class FixtureSite(unittest.TestCase):
         self.assertIn("light-dark(", html)
 
     def test_hero_page_override(self):
-        code = read(self.out / "posts" / "code" / "index.html")
-        hero = re.search(r'<header class="hero"[^>]*>', code)
-        self.assertIsNotNone(hero, "code post has no hero header")
-        self.assertRegex(hero.group(0), r"background-image:[^\"]*hero-test\.png")
-        newer = read(self.out / "posts" / "newer" / "index.html")
-        hero = re.search(r'<header class="hero"[^>]*>', newer)
-        self.assertIsNotNone(hero, "newer post has no hero header")
-        self.assertNotIn("background-image", hero.group(0))
+        code = hero_tag(read(self.out / "posts" / "code" / "index.html"))
+        self.assertIsNotNone(code, "code post has no hero header")
+        self.assertRegex(code, r"--hero-img:\s*url\('[^']*hero-test\.png'\)")
+        newer = hero_vars(read(self.out / "posts" / "newer" / "index.html"))
+        self.assertTrue(newer.get("--hero-img", "").endswith("/img/hero-moonbase-night.webp"),
+                        "a post without an override should get the site pair")
+
+
+FIXTURE_HERO_PLAIN = """+++
+title = "Plain hero fixture"
+date = 2026-01-01
++++
+Body.
+"""
+
+FIXTURE_HERO_DARK_ONLY = """+++
+title = "Dark-only hero fixture"
+date = 2026-01-02
+
+[extra]
+hero_image = "img/post-night.png"
++++
+Body.
+"""
+
+FIXTURE_HERO_PAIR = """+++
+title = "Pair hero fixture"
+date = 2026-01-03
+
+[extra]
+hero_image = "img/post-night.png"
+hero_image_light = "img/post-day.png"
+hero_credit = "POST-CREDIT"
++++
+Body.
+"""
+
+
+class HeroPairSite(unittest.TestCase):
+    """A site-wide day/night hero pair, plus per-post overrides."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.tmp.name)
+        site = make_fixture_site(root, {
+            "plain.md": FIXTURE_HERO_PLAIN,
+            "dark-only.md": FIXTURE_HERO_DARK_ONLY,
+            "pair.md": FIXTURE_HERO_PAIR,
+        })
+        set_hero_config(site, hero_image="img/site-night.png",
+                        hero_image_light="img/site-day.png",
+                        hero_credit="SITE-CREDIT *x*")
+        cls.out = root / "public"
+        result = build(site, cls.out)
+        if result.returncode != 0:
+            raise RuntimeError("hero fixture build failed:\n" + result.stderr)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def vars(self, route):
+        return hero_vars(read(self.out / route))
+
+    def test_site_pair_default(self):
+        for route in ["index.html", "posts/plain/index.html"]:
+            v = self.vars(route)
+            self.assertTrue(v.get("--hero-img", "").endswith("/img/site-night.png"), route)
+            self.assertTrue(v.get("--hero-img-light", "").endswith("/img/site-day.png"), route)
+
+    def test_page_pair_overrides_both(self):
+        v = self.vars("posts/pair/index.html")
+        self.assertTrue(v.get("--hero-img", "").endswith("/img/post-night.png"))
+        self.assertTrue(v.get("--hero-img-light", "").endswith("/img/post-day.png"))
+        self.assertNotIn("site-day", read(self.out / "posts" / "pair" / "index.html"))
+
+    def test_page_dark_only_no_site_light(self):
+        v = self.vars("posts/dark-only/index.html")
+        self.assertTrue(v.get("--hero-img", "").endswith("/img/post-night.png"))
+        self.assertNotIn("--hero-img-light", v)
+
+    def test_hero_urls_absolute(self):
+        for route in ["index.html", "posts/plain/index.html",
+                      "posts/pair/index.html", "posts/dark-only/index.html"]:
+            v = self.vars(route)
+            self.assertTrue(v, route)
+            for name, url in v.items():
+                self.assertTrue(url.startswith("http"), f"{route} {name}={url}")
+
+    def credit(self, route):
+        return hero_credit(read(self.out / route))
+
+    def test_credit_follows_site_pair(self):
+        self.assertIn("SITE-CREDIT", self.credit("posts/plain/index.html") or "")
+
+    def test_page_credit_with_own_pair(self):
+        credit = self.credit("posts/pair/index.html") or ""
+        self.assertIn("POST-CREDIT", credit)
+        self.assertNotIn("SITE-CREDIT", credit)
+
+    def test_dark_only_no_site_credit(self):
+        self.assertIsNone(self.credit("posts/dark-only/index.html"))
+
+    def test_credit_inline_markdown(self):
+        self.assertIn("<em>x</em>", self.credit("index.html") or "")
+
+    def test_no_inline_background_image(self):
+        for page in self.out.rglob("*.html"):
+            tag = hero_tag(read(page))
+            if tag:
+                self.assertNotIn("background-image", tag, page)
+
+
+class NoHeroSite(unittest.TestCase):
+    """The site with every hero_* setting emptied: a solid colour block."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.tmp.name)
+        site = make_fixture_site(root, {})
+        set_hero_config(site)
+        cls.out = root / "public"
+        result = build(site, cls.out)
+        if result.returncode != 0:
+            raise RuntimeError("no-hero fixture build failed:\n" + result.stderr)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_hero_default_solid(self):
+        html = read(self.out / "index.html")
+        hero = hero_tag(html)
+        self.assertIsNotNone(hero, "landing has no hero header")
+        self.assertNotIn("--hero-img", hero)
+        self.assertNotIn("background-image", hero)
+        self.assertIsNone(hero_credit(html))
 
 
 class DraftsSite(unittest.TestCase):

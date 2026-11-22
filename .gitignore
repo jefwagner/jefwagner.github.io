@@ -3,3 +3,6 @@
 
 # Python bytecode from running tests/
 __pycache__/
+
+# hero image work: raw generations, previews, OpenRouter cost log
+/hero-work/

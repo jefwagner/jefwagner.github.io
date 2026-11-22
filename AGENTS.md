@@ -60,9 +60,14 @@ follow `notes/post-workflow.md`.
   (math delimiters and title only; prose unchanged).
 - `scripts/new_post.py` — starts a post: branch `post/<slug>` from
   `origin/main` plus a draft page bundle with placeholders only.
+- `scripts/hero.py` + `scripts/hero_gen/` — hero banners via OpenRouter image
+  models (generate, day/night twin, contrast check, export to `static/img/`);
+  deps declared inline for `uv run`. Costs money: see `notes/hero-images.md`.
+  Writes scratch output to `hero-work/` (gitignored).
 - `scripts/check` — runs every test suite (what CI runs).
 - `tests/` — `check_site.py` (site build checks), `test_notes_to_post.py`,
-  `test_new_post.py`, `katex_check.js`.
+  `test_new_post.py`, `test_hero_gen.py` (no network, no spend),
+  `katex_check.js`.
 - `.github/workflows/site.yml` — CI checks on every push/PR; build (no
   drafts) and Pages deploy on push to `main`. Zola version + sha256 pinned
   here (a test keeps it equal to the local Zola).
@@ -70,7 +75,10 @@ follow `notes/post-workflow.md`.
   front-matter switches, math-as-code, Zola 0.23 gotchas, widget contract.
 - `notes/post-workflow.md` — the procedure for shipping a post: branch,
   preview (incl. over SSH), checks, PR, merge = deploy, undo.
-- `planning/` — handoff docs for work done in other repos (flint docs).
+- `notes/hero-images.md` — making hero banners: day/night pairs, shape,
+  the `hero.py` workflow, cost and key handling.
+- `planning/` — handoff docs for work done in other repos (flint docs, the
+  hero-image lab experiment).
 - `todo.md`, `backlog.md`, `changelog.md` — tdd-mode planning and history.
 
 ## Build and test

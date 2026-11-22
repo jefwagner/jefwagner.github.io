@@ -12,7 +12,7 @@ site, shipping the moonbase day/night banner.
   drop `test_placeholders_only`; footer link on every page; policy page
   builds. Housekeeping: flint docs are live, so drop the `/flint/` 404
   note in AGENTS.md.
-- [ ] **Light-mode hero variant.** `[extra] hero_image_light` (site and
+- [x] **Light-mode hero variant.** `[extra] hero_image_light` (site and
   per-page, same override rules as `hero_image`), applied under
   `prefers-color-scheme: light`; with no light image, light mode is a solid
   colour even if a dark image is set (one image can't pass AA in both

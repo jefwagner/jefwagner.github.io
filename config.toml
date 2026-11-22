@@ -20,6 +20,9 @@ extra_grammars = ["grammars/math.json"]
 # Hero banner title on every page; inline markdown (*f* renders italic).
 # Falls back to `title` above. Browser tab titles keep using `title`.
 hero_title = "Jef with one *f*"
-# Site-wide hero banner image, as a path under static/. Empty means a solid
-# color block. A page can override it with [extra] hero_image in front matter.
+# Site-wide hero banner, as paths under static/: hero_image for dark mode
+# (the default scheme), hero_image_light for light mode. Empty means a solid
+# color block. A page overrides the pair with [extra] hero_image (and its own
+# optional hero_image_light) in front matter; it never inherits the site's
+# light image.
 hero_image = ""

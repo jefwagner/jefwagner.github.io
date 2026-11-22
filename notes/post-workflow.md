@@ -31,6 +31,9 @@ gh pr merge --squash --delete-branch         # merge = deploy
   including the deploy. A draft merged to `main` by accident is invisible
   on the live site.
 - Local `zola serve` is the preview. There are no deployed PR previews.
+- Non-post changes (templates, CSS, scripts, docs) take the same path:
+  any branch name, PR to `main`, merge. Nothing is pushed to `main`
+  directly.
 
 ## 1. Start the post
 
@@ -46,8 +49,9 @@ python3 scripts/new_post.py <slug> [--title "Your title"]
   tree has any modified or untracked file, if `post/<slug>` already
   exists locally or on `origin`, or if `content/posts/<slug>` (bundle or
   `.md`) already exists on the base.
-- Otherwise it creates branch `post/<slug>` from `origin/main` (with no
-  upstream yet) and writes `content/posts/<slug>/index.md`: a draft with
+- Otherwise it creates branch `post/<slug>` from the freshly fetched
+  `origin/main` (with no upstream yet), so a stale local `main` doesn't
+  matter and writes `content/posts/<slug>/index.md`: a draft with
   placeholder title and description, today's date, and the `[extra]`
   switches commented out. Nothing is committed or pushed.
 - `--base REF` branches from something other than `origin/main`;
@@ -112,7 +116,8 @@ Before opening the PR, in the post's front matter:
 
 - remove `draft = true`,
 - set `date` to the publish date (the post list sorts by it),
-- replace the `TODO` title and description.
+- replace the `TODO` title and description. **No check catches a
+  leftover `TODO` here**, so read the front matter.
 
 Then confirm it shows **without** `--drafts`: stop the server and run
 plain `zola serve`. The post should be in the list on `/` and at
@@ -145,7 +150,7 @@ gh pr merge --squash --delete-branch
 - Squash keeps `main` at one commit per post, which is also what makes
   undoing a post a single revert (step 8).
 - `--delete-branch` deletes the remote branch and the local one, and
-  switches you back to `main`.
+  switches you to your local `main`, which is now behind; see step 8.
 - The merge pushes to `main`, which runs `check` again and then
   `deploy`. Watch it:
 
@@ -170,13 +175,24 @@ finishes; a hard refresh beats the browser cache.
 
 ## 8. Clean up, or undo a post
 
-Clean up after a merge: `git switch main && git pull`, and if the branch
-wasn't deleted by `--delete-branch`:
+Clean up after a merge (`--delete-branch` has already left you on
+`main`):
+
+```text
+git pull --ff-only          # local main catches up with the merge
+git fetch --prune           # drops the stale origin/post/<slug> ref
+```
+
+If the branch wasn't deleted by `--delete-branch`:
 
 ```text
 git branch -D post/<slug>
 git push origin --delete post/<slug>
 ```
+
+To abandon a post that has a PR open: `gh pr close <number>
+--delete-branch` (same branch cleanup, nothing merged), then the two
+commands above.
 
 To take a published post down:
 

@@ -1,5 +1,8 @@
 # Backlog
 
+- flint docs handoff: `/flint/` is 404 since go-live (2026-11-21), and it is
+  the PyPI homepage for numpy-flint. Run `planning/flint-docs-handoff.md` in
+  the flint repo (rename to `flint`, own Pages site).
 - Thermo post leftovers (optional review points from
   `~/lab/thermo/notes/basics-comments.md`, now applying to
   `content/posts/thermo/index.md`): drop "(up to a sign)" in the Legendre
@@ -16,5 +19,8 @@
   Giallo writes `color-scheme: light dark` inline on every `<pre>`, so code
   blocks would ignore a toggle; set `add_color_scheme = false` under
   `[markdown.highlighting]` and drive `color-scheme` from the toggle.
-- CI warning when a PR to `main` still contains `draft = true` posts
-  (harmless — drafts aren't built — but easy to forget to flip).
+- Publish-readiness check for posts: fail when a non-draft post still has
+  a `TODO` title/description/body (found in the go-live dry run: an
+  un-drafted scaffold passes every check), and warn when a PR to `main`
+  still contains `draft = true` posts (harmless, since drafts aren't built,
+  but easy to forget to flip).

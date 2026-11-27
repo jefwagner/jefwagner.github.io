@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-11-22: content, AI policy page, hero banner
+
+jef's own landing and about text is live, his AI policy has its own page,
+and the site has its first hero banner, made with tooling brought in from
+the `or-img-gen` lab experiment (PR #5).
+
+- Content: jef's landing intro and about page (mechanical fixes only); his
+  AI policy moved word for word to `/ai-policy/`, linked from a new site
+  footer. The hero title is "Jef with one *f*" (`[extra] hero_title`,
+  inline markdown); tab titles stay "Jef Wagner".
+- Light-mode hero: `hero_image` / `hero_image_light` are a day/night pair,
+  chosen together, because the lab found no single image keeps the hero
+  text at WCAG AA in both colour modes. `hero_credit` (footer image credit,
+  required by jef's AI policy) travels with its pair; a page with its own
+  pair never inherits the site's light image or credit.
+- `scripts/hero.py` + `scripts/hero_gen/`: generate / twin (paid, capped
+  per call), check and export (offline, contrast-gated into `static/img/`),
+  models, spend. Never prints or logs the key; sends a generic app title.
+  Its tests (no network, no spend) run in `scripts/check` via uv's PEP 723
+  support, so the other suites stay stdlib-only. Prompts still DRAFT.
+- Moonbase banner (Nano Banana): 2880x360 WebP, 73/72 KB; a test keeps the
+  configured pair passing contrast and under 150 KB.
+- flint docs are live from the flint repo's own Pages site.
+- Learned: Zola 0.23 uses Tera 2 (no `concat`; strings built in `set` are
+  autoescaped); a new deploy can look broken for up to 10 minutes because
+  Pages serves `style.css` with `max-age=600` (hard refresh).
+
 ## 2026-11-21 (third chunk): post workflow and go-live
 
 The new site is live, deployed by GitHub Actions from `main`, and adding a

@@ -72,6 +72,21 @@ every save (content, templates, `static/`, `config.toml`).
 Uncomment the `[extra]` switches the post needs (`math = true` for any
 math). Images and widget JS go in the bundle folder next to `index.md`.
 
+### In the devcontainer
+
+The container publishes port 1111 on the host's loopback only. Inside, zola
+has to listen on all interfaces to be reachable through it, while the URLs
+written into the pages stay `127.0.0.1`:
+
+```text
+zola serve --drafts --interface 0.0.0.0 -u 127.0.0.1
+```
+
+Then open <http://127.0.0.1:1111/> on the host (or tunnel the host's 1111
+over SSH, as below). The port can't move without changing `runArgs` in
+`.devcontainer/devcontainer.json`, and a host-side `zola serve` on 1111
+collides with it while the container runs.
+
 ### Remote authoring over SSH
 
 When the repo lives on another machine, run `zola serve` there and

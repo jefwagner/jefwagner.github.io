@@ -1,4 +1,4 @@
-# AGENTS.md — jefwagner.github.io
+# AGENTS.md — blog (jefwagner.github.io)
 
 ## Project summary
 
@@ -25,6 +25,9 @@ CI.
 jef's; his AI policy is its own page, `/ai-policy/`, linked from the site
 footer. The hero is the moonbase day/night banner, credited in the footer
 (`hero_credit`). New posts follow `notes/post-workflow.md`.
+2026-11-27: moved from `~/github-pages` to `~/projects/blog` and given an
+agent devcontainer; the `docs/wrap-up-hero` close-out still awaits its PR
+to `main`.
 
 ## Writing rule (prose is jef's)
 
@@ -79,7 +82,10 @@ footer. The hero is the moonbase day/night banner, credited in the footer
 - `notes/hero-images.md` — making hero banners: day/night pairs, shape,
   the `hero.py` workflow, cost and key handling.
 - `planning/` — handoff docs for work done in other repos (flint docs, the
-  hero-image lab experiment).
+  hero-image lab experiment). Historical: they name the old clone path
+  `~/github-pages`; the repo is now `~/projects/blog`.
+- `.devcontainer/` — the agent container (see Containment); `git-askpass.sh`
+  supplies the repo PAT inside it.
 - `todo.md`, `backlog.md`, `changelog.md` — tdd-mode planning and history.
 
 ## Build and test
@@ -88,7 +94,8 @@ Free to run without asking (read-only checks):
 
 ```text
 zola build --output-dir <tmpdir>                                 # build (never into the repo)
-zola serve [--drafts]                                            # local preview
+zola serve [--drafts]                                            # local preview (host)
+zola serve --drafts --interface 0.0.0.0 -u 127.0.0.1             # preview from the container
 scripts/check                                                    # all suites, as CI runs them
 python3 tests/check_site.py                                      # site checks only (Python 3.10+)
 ```
@@ -113,103 +120,113 @@ gitignored.
 
 ## Modes of work
 
-Mode switches are explicit — say "pair", "tdd", or "unsupervised" to change modes.
-The default, when no mode is stated, is **pair**.
+The modes and their rules come from the global instructions
+(`~/.pi/agent/AGENTS.md`) and the skills: `/skill:pair`, `/skill:tdd-plan`
+then `/skill:tdd-implement`, `/skill:unsupervised-goal` then
+`/skill:unsupervised-run`. The default is **pair**. All three modes are
+allowed in this repo; switching is jef's call.
 
-Three nested loops, each with a different unit of approval:
+What this repo adds:
 
-| Mode           | Unit of work              | Writes need approval? |
-|----------------|---------------------------|-----------------------|
-| `pair`         | single command/change     | yes, per command      |
-| `tdd`          | task / commit-sized item  | no                    |
-| `unsupervised` | feature / whole goal      | no                    |
+- **Read-only checks** pair mode may run freely: `scripts/check`,
+  `python3 tests/check_site.py`, `zola build --output-dir <tmpdir>` (never
+  into the repo), `zola check`.
+- **The Writing rule above applies in every mode**, unsupervised included.
+  An unsupervised goal may build infrastructure or review prose; it may never
+  draft it.
+- **Unsupervised base branch:** `main`, but a run never pushes to it: it
+  pushes its `agent/<slug>` branch and jef opens and merges the PR (merging
+  deploys). The end-of-run test suite is `scripts/check` with
+  `REQUIRE_NODE=1`.
+- **Spend has two meters here.** `scripts/hero.py` paid commands spend the
+  same OpenRouter key as pi. In an unsupervised run, count them against the
+  goal's cap (`--max-cost` per call, plus `spend.py`), and don't run them at
+  all unless the goal says so.
 
-The nesting widens the unit of work that may be done unattended: a single command
-in pair, a task in tdd, a whole feature or goal in unsupervised. Stepping up is
-jef's call, not mine — if a task needs many writes, say so and suggest `tdd`
-rather than quietly widening the loop.
+## Planning and progress files
 
-### Pair mode (default)
+`todo.md` (current session, 1–4 commit-sized items), `backlog.md` (persistent
+ideas, triaged in planning), `changelog.md` (dated history, written by
+`close-chunk`). Lasting knowledge goes in `notes/`.
 
-Pair-programming at the keyboard. Short back-and-forth, one or two ideas per
-interaction — no long essays presenting a pile of options. Every idea and change
-gets discussed as we go: a sentence or two saying what I'm about to do and why,
-then act. No autopilot — no multi-file refactors or multi-step plans executed
-without checking in between steps.
+## Containment
 
-Freely, without asking:
+**Work inside the devcontainer** (`devcontainer up --workspace-folder .`,
+then `devcontainer exec --workspace-folder . pi`). The properties below are
+enforced by the container, not promised by this file: a session on the host
+has the personal SSH key and defeats all of it. If a session is running
+outside the container, say so before doing anything else.
 
-- read files, search the repo (`rg`, `find`, `grep`), read `notes/` and the wiki
-- non-destructive inspection: `ls`, `cat`, `head`, `tail`, `wc`, `git status`,
-  `git log`, `git diff`, and the project's own read-only checks (type-checks,
-  linters, test suites, `--help` output)
+### What the container enforces
 
-Ask for explicit approval, per command, before:
+- **No personal SSH key**, and no `ssh`, `scp`, `sftp`, `ssh-agent` or
+  `rsync` binary. Git has no SSH transport.
+- **One GitHub credential**: the repo-scoped PAT, mounted read-only. No other
+  repo's PAT, no lab-bot GitHub credential.
+- **One API key**: the lab-bot's spend-capped OpenRouter key at
+  `~/.pi/agent/auth.json`, used by pi and by `scripts/hero.py`.
+- **No `~/.aws`, `~/.azure`, `~/.config/lab-bot`, or host tool directory.**
+- **`~/wiki/` is read-only.** The instructions, skills and
+  `~/tools/spend.py` are read-only too.
+- **No mail credentials.** The one writable path outside the workspace is
+  `~/outbox`, where `notify-jef` drops a message for agentd on the host to
+  check and send. The container can't choose the recipient.
+- `--cap-drop=ALL`, `--security-opt=no-new-privileges:true`; port 1111 is
+  published on the host's loopback only, for the preview.
 
-- writing, editing, creating, moving, or deleting any file — including `notes/`,
-  `todo.md`, `backlog.md`, and anything outside the repo
-- destructive or state-changing commands: `rm`, `mv`, `cp` over an existing file,
-  `git commit`/`push`/`checkout`/`reset`, or anything else that changes state on
-  disk
-- installing packages, editing config outside the repo, sending mail
+Consequence: **the worst realistic outcome of a bad unattended run is commits
+and `agent/*` branches in this repo, plus one notification to jef.** It can't
+reach the live site, because only a merge to `main` deploys and `main` takes
+changes only through a PR jef merges.
 
-Approval is per command, not blanket — "yes, go ahead" for one command does not
-authorize the next. One approval covers one file: a multi-hunk edit within a
-single file is one atomic change, but two files is two approvals. Never commit
-unless asked in that same turn, even if every individual write was approved.
+### Credentials
 
-Full rules: read `~/tools/llm-instructions/pair.md`.
+Agent sessions push as `jefwagner` with a fine-grained PAT scoped to
+`jefwagner/jefwagner.github.io` only (Contents read/write; see the
+`pat-setup` skill). It lives at `~/.config/jef/blog-pat` (mode 600, outside
+the repo) and is mounted at the same path. `git-askpass.sh` reads it at call
+time; `devcontainer.json` sets `GIT_ASKPASS`, `GIT_TERMINAL_PROMPT=0` and
+`GIT_SSH_COMMAND=/bin/false`. The remote is HTTPS.
 
-### TDD mode (interactive)
+The PAT has **no Workflows permission**, so a push that changes
+`.github/workflows/` is refused. CI and deploy changes are made by jef on the
+host. If a git command prompts interactively, something is misconfigured:
+stop and say so.
 
-Structured mode for larger chunks of work. Two sub-modes:
+### Branches
 
-- **Plan** — read `~/tools/llm-instructions/planning.md` first. Produces 1–4
-  one-commit-sized items in `todo.md` and triages `backlog.md`.
-- **Implement** — read `~/tools/llm-instructions/implementation.md` first. TDD
-  loop with hard STOP gates requiring user approval at the task level.
+- **`main` is the live site**: every push to it deploys. It rejects
+  force-pushes and deletion (branch protection), which binds jef too.
+- Agent work goes on `agent/<short-desc>` branches; posts on `post/<slug>`
+  (`scripts/new_post.py`, `notes/post-workflow.md`). Never commit to `main`
+  directly, and never push or merge to it unless jef asks in that same turn.
+- Unattended work always runs in a worktree (the `unsupervised-run` skill).
 
-Writes, edits, and commits are **not** gated per command here — the task-level
-STOP gates are the approval unit. Commits remain one-item-per-commit, and I still
-state intent before each task, but I don't ask before every `edit`.
+### Residual risk
 
-### Unsupervised mode
-
-For well-scoped work that jef approves up front and then leaves to run
-independently (e.g. overnight or long-running jobs).
-
-1. **Goal stage (conversational)**: work with jef to draft `goal.md` at the repo
-   root. It must contain: the goal, constraints, a definition of done, and a
-   **spend cap in dollars** agreed during the conversation. Write `goal.md` as a
-   complete prompt — an agent with no other context should be able to do the work
-   from it alone.
-2. **Approval gate**: do not start work until jef explicitly approves `goal.md`.
-   Revise and re-submit until approved.
-3. **Independent work**: once approved, proceed without further check-ins. Track
-   spend against the cap with:
-   `uv run ~/tools/spend.py --cap <cap from goal.md>`
-   (the script prints session spend and exits non-zero once the cap is exceeded).
-   Check periodically as you work.
-4. **Stop and report**: stop when the goal is met, the cap is exceeded, or the
-   work is blocked. In every case, write a summary email — what was done, what
-   was learned, current state, and next steps, including the final spend from
-   `uv run ~/tools/spend.py` — and send it to jef with:
-   `msmtp -t < summary-email.txt`
-   (mail is configured via the mounted `~/.msmtprc`; from address is
-   jefwagner@gmail.com).
+- **Spend.** `spend.py` and `hero.py --max-cost` report and refuse; nothing
+  else interrupts. Treat a non-zero `spend.py` exit as a stop signal.
+- **Damage within this repo.** `reset --hard`, `rm` and force-pushes to
+  unprotected branches are still possible, hence worktrees and branches.
+- **The prose rule is prose.** Nothing mechanical stops an agent from
+  drafting text into `content/`. jef reviews every PR before it deploys,
+  and that review is the only thing holding the line.
+- **as-you-like-it is private** but its build ships publicly from
+  `static/`. Don't add anything there beyond the unchanged build.
 
 ## Git
 
-- Remote is jef's own **public** repo, `github.com/jefwagner/jefwagner.github.io`.
-  Every push to `main` deploys the live site, so changes reach `main` only
-  through a PR from a branch (posts: `post/<slug>`; see
-  `notes/post-workflow.md`). Never push or merge to `main` unless jef asks in
-  that same turn.
-- Commit identity in the devcontainer is the bot account. Commit style: short
-  summary line + longer body.
+- Remote: jef's own **public** repo,
+  `https://github.com/jefwagner/jefwagner.github.io`, over HTTPS.
+- Commit identity comes from the repo-local git config. Style: short summary
+  line, blank line, then a body.
+- Never commit unless asked in that same turn. No history rewriting:
+  merges and new commits only, never force-push.
 
 ## Wiki
 
-This repo has **no** entry in `~/wiki/projects/`. Knowledge stays in `notes/`.
-If it ever gets one, add a wiki pointer here following the pattern in
-`~/wiki/AGENTS.md`.
+`~/wiki/` is **mounted read-only**. Read it freely, but **never write to it,
+and don't write wiki proposals.** The wiki is becoming a project catalog that
+the orchestrator maintains. Things worth keeping go in `notes/` (the
+`close-chunk` skill); unsupervised runs put them in the summary's "For the
+catalog" section.

@@ -1,0 +1,69 @@
+{
+  "name": "blog",
+
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "//": "Read the comment in .devcontainer/Dockerfile first. Containment here is a function of what is NOT mounted and NOT installed, so the mount list below is deliberately short. Before adding a mount, ask: does this need to be writable, does it carry a credential, and is there a path that does not require it? Adding a mount here is a security decision, not a convenience one.",
+
+  "mounts": [
+    "source=${localEnv:HOME}/.config/jef/blog-pat,target=/home/vscode/.config/jef/blog-pat,type=bind,readonly",
+    "source=${localEnv:HOME}/tools/spend.py,target=/home/vscode/tools/spend.py,type=bind,readonly",
+    "source=${localEnv:HOME}/tools/agent-kit/instructions,target=/home/vscode/tools/llm-instructions,type=bind,readonly",
+    "source=${localEnv:HOME}/tools/agent-kit/skills/worker,target=/home/vscode/.pi/agent/skills,type=bind,readonly",
+    "source=${localEnv:HOME}/.local/state/agentd/outbox/${localWorkspaceFolderBasename}/new,target=/home/vscode/outbox,type=bind",
+    "source=${localEnv:HOME}/tools/bin-container,target=/home/vscode/tools/bin-container,type=bind,readonly",
+    "source=${localEnv:HOME}/wiki,target=/home/vscode/wiki,type=bind,readonly",
+    "source=${localEnv:HOME}/.config/lab-bot/pi-auth.json,target=/home/vscode/.pi/agent/auth.json,type=bind,readonly"
+  ],
+
+  "//mounts-why": "Eight mounts, and each is deliberate. (1) the repo-scoped PAT, at the same relative path it has on the host so git-askpass.sh needs no container variant. NOT the ~/.config/jef directory, which holds every other repo's PAT. (2) the spend-cap script, (3) agent-kit's instructions/ (at the old ~/tools/llm-instructions path) and (4) its worker skills where pi looks for them, all read-only so the agent cannot edit the rules it runs under. (5) this repo's outbox new/, the only writable mount besides the workspace: notify-jef drops a message there and the host's agentd validates, rate-limits and mails it (agentd I5). (6) ~/tools/bin-container, read-only and on PATH, for notify-jef. (7) the wiki, read-only. (8) the lab-bot's spend-capped OpenRouter key, for pi and for scripts/hero.py (hero_gen/openrouter.py reads ~/.pi/agent/auth.json), not a personal one. NOT ~/.ssh, NOT the rest of ~/.config/lab-bot, NOT ~/.aws or ~/.azure, NOT the rest of ~/tools, NOT the docker socket.",
+
+  "//initializeCommand": "Runs on the HOST before the container starts. Creates this repo's outbox dirs so Docker does not create the bind source root-owned, and an empty placeholder PAT file (mode 600) so the mount works before the real token is saved; git push fails cleanly until it is. The project name is the directory basename, as agentd tags it (I4).",
+  "initializeCommand": "mkdir -p \"$HOME/.local/state/agentd/outbox/${localWorkspaceFolderBasename}/new\" \"$HOME/.local/state/agentd/outbox/${localWorkspaceFolderBasename}/sent\" \"$HOME/.local/state/agentd/outbox/${localWorkspaceFolderBasename}/rejected\" && (umask 077; touch \"$HOME/.config/jef/blog-pat\")",
+
+  "//postStartCommand": "Links the global instructions into place for pi. The link points into the read-only directory mount, not a single-file bind, which would pin the inode and go stale when the host file is edited.",
+  "postStartCommand": "mkdir -p /home/vscode/.pi/agent && ln -sfn /home/vscode/tools/llm-instructions/AGENTS.global.md /home/vscode/.pi/agent/AGENTS.md",
+
+  "//runArgs": "Port 1111 is published on the host's loopback only, for the zola serve preview (run it with --interface 0.0.0.0 inside; see notes/post-workflow.md). It is the only port: Zola 0.23 serves live-reload on the same one. While this container runs, a host-side zola serve needs another port.",
+  "runArgs": [
+    "--memory=4g",
+    "--cpus=2",
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges:true",
+    "-p", "127.0.0.1:1111:1111"
+  ],
+
+  "//features": "No docker-in-docker: the site is a zola build, nothing else.",
+
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/home/vscode/tools/bin-container",
+    "SHELL": "/bin/bash",
+
+    "//git": "GIT_ASKPASS points at the tracked script that reads the mounted PAT. GIT_TERMINAL_PROMPT=0 stops a failed lookup from falling back to an interactive prompt, which hangs an unattended run. GIT_SSH_COMMAND=/bin/false backs up the missing ssh binary.",
+    "GIT_ASKPASS": "/workspace/git-askpass.sh",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "/bin/false",
+
+    "UV_LINK_MODE": "copy",
+    "UV_COMPILE_BYTECODE": "1"
+  },
+
+  "//customizations": "No postCreateCommand: zola is a single binary and the scripts are PEP 723, so there is nothing to provision. Commit identity comes from the repo-local git config.",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "tamasfe.even-better-toml"
+      ]
+    }
+  }
+}
